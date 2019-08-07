@@ -1,0 +1,7 @@
+./LcD0ratio o1.root 1000000  > out1&
+sleep 1
+./LcD0ratio o2.root 1000000  > out2&
+sleep 1
+./LcD0ratio o3.root 1000000  > out3&
+sleep 1
+./LcD0ratio o4.root 1000000  > out4&
