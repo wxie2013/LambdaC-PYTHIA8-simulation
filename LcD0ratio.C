@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
 
   pythia.readString("PhaseSpace:pTHatMin = 0.");
   pythia.readString("Beams:eCM = 5020.");
+  //pythia.readString("Beams:eCM = 200.");
   //pythia.readString("Beams:eCM = 7000.");
   //
   //pythia.readString("HardQCD:all = on");
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
   pythia.readString("StringFlav:probQQtoQ =0.078");
   pythia.readString("StringFlav:ProbStoUD =0.2");
   pythia.readString("StringFlav:probQQ1toQQ0join = 0.0275,0.0275,0.0275,0.0275");
-  pythia.readString("MultiPartonInteractions:pT0Ref =2.12");
+  pythia.readString("MultiPartonInteractions:pT0Ref =2.15");
   pythia.readString("BeamRemnants:remnantMode =1");
   pythia.readString("BeamRemnants:saturation= 5");
   pythia.readString("ColourReconnection:mode = 1");
@@ -136,10 +137,10 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < pythia.event.size(); ++i)
       if (abs(pythia.event[i].id()) == 4122) {
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
       } else if(abs(pythia.event[i].id()) == 421) {
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
       } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
             cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
