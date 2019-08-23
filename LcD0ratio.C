@@ -128,6 +128,8 @@ int main(int argc, char* argv[]) {
   TNtuple* Lc = new TNtuple("Lc", "", "m:pt:y");
   TNtuple* D0 = new TNtuple("D0", "", "m:pt:y");
   TNtuple* B = new TNtuple("B", "", "m:pt:y");
+  TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
+  TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
   //TNtuple* nt = new TNtuple("nt", "", "m:pt:y");
 
   // Begin event loop. Generate event; skip if generation aborted.
@@ -141,6 +143,12 @@ int main(int argc, char* argv[]) {
       } else if(abs(pythia.event[i].id()) == 421) {
           cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+      } else if(abs(pythia.event[i].id()) == 511) {
+          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+          B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+      } else if(abs(pythia.event[i].id()) == 5122) {
+          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+          Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
       } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
             cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
             B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
@@ -155,6 +163,8 @@ int main(int argc, char* argv[]) {
   Lc->Write();
   D0->Write();
   B->Write();
+  B0->Write();
+  Lb->Write();
   delete outFile;
 
   // Done.
