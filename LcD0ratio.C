@@ -184,6 +184,8 @@ int main(int argc, char* argv[]) {
   B->Write();
   B0->Write();
   Lb->Write();
+  Lb_Lc->Write();
+  Lb_jpsi->Write();
   delete outFile;
 
   // Done.
