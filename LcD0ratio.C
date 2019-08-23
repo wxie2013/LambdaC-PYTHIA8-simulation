@@ -41,8 +41,8 @@ int main(int argc, char* argv[]) {
   //pythia.readString("HardQCD:all = on");
   pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
   // the following is the Monash tune
-  pythia.readString("Tune:pp 14");
-  pythia.readString("Tune:ee 7");
+  //pythia.readString("Tune:pp 14");
+  //pythia.readString("Tune:ee 7");
 
   // the following is the CUEP8M1 tune
   //pythia.readString("Tune:pp 14");
