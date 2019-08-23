@@ -41,8 +41,8 @@ int main(int argc, char* argv[]) {
   //pythia.readString("HardQCD:all = on");
   pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
   // the following is the Monash tune
-  //pythia.readString("Tune:pp 14");
-  //pythia.readString("Tune:ee 7");
+  pythia.readString("Tune:pp 14");
+  pythia.readString("Tune:ee 7");
 
   // the following is the CUEP8M1 tune
   //pythia.readString("Tune:pp 14");
@@ -130,6 +130,8 @@ int main(int argc, char* argv[]) {
   TNtuple* B = new TNtuple("B", "", "m:pt:y");
   TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
   TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
+  TNtuple* Lb_Lc = new TNtuple("Lb_Lc", "", "m:pt:y");
+  TNtuple* Lb_jpsi = new TNtuple("Lb_jpsi", "", "m:pt:y");
   //TNtuple* nt = new TNtuple("nt", "", "m:pt:y");
 
   // Begin event loop. Generate event; skip if generation aborted.
@@ -137,20 +139,37 @@ int main(int argc, char* argv[]) {
     if (!pythia.next()) continue;
 
     for (int i = 0; i < pythia.event.size(); ++i)
-      if (abs(pythia.event[i].id()) == 4122) {
-          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+      if (abs(pythia.event[i].id()) == 4122) {//.. Lc
+          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-      } else if(abs(pythia.event[i].id()) == 421) {
-          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+
+          //.. Lb->Lc
+          if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
+                      Lb_Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
+      } else if(abs(pythia.event[i].id()) == 421) {//. D0
+
+          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-      } else if(abs(pythia.event[i].id()) == 511) {
-          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+
+      } else if(abs(pythia.event[i].id()) == 511) { //.. B0
+
+          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-      } else if(abs(pythia.event[i].id()) == 5122) {
-          cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+
+      } else if(abs(pythia.event[i].id()) == 5122) { //lambda_b
+
+          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
           Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
+      } else if(abs(pythia.event[i].id()) == 443) { // Lb->J/psi
+
+          if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
+                      Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
       } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
-            cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+
+            //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
             B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
       } 
   }
