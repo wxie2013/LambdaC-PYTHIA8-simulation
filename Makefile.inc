@@ -65,8 +65,8 @@ PROMC_LIB=
 
 # ROOT configuration.
 ROOT_USE=true
-ROOT_BIN=/home/root/bin
-ROOT_LIBS=/home/root/lib
+ROOT_BIN=/home/ROOT/bin
+ROOT_LIBS=/home/ROOT/lib
 CXX_ROOT=
 
 # GZIP configuration.

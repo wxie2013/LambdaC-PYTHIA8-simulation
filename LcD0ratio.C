@@ -17,10 +17,10 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
-    char* filename = argv[1];
-    int nevt = atoi(argv[2]);
+  char* filename = argv[1];
+  int nevt = atoi(argv[2]);
 
-    cout<<"outfile: "<<filename<<" nevt: "<<nevt<<endl;
+  cout<<"outfile: "<<filename<<" nevt: "<<nevt<<endl;
 
   // Create the ROOT application environment.
   TApplication theApp("hist", &argc, argv);
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
   //pythia.readString("MultipartonInteractions:expPow=1.6");
   //pythia.readString("MultiPartonInteractions:pT0Ref =2.4024");
 
- // Color reconnection tune (CR) mode0 
+  // Color reconnection tune (CR) mode0 
   //pythia.readString("Tune:pp 14");
   //pythia.readString("Tune:ee 7");
   //pythia.readString("MultipartonInteractions:ecmPow=0.25208");
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
   //pythia.readString("ColourReconnection:junctionCorrection=1.43");
   //pythia.readString("ColourReconnection:timeDilationMode=0");
 
- // Color reconnection tune (CR) mode2 
+  // Color reconnection tune (CR) mode2 
   pythia.readString("Tune:pp 14");
   pythia.readString("Tune:ee 7");
   pythia.readString("StringPT:sigma =0.335");
@@ -125,8 +125,8 @@ int main(int argc, char* argv[]) {
   TFile* outFile = new TFile(filename, "RECREATE");
 
   // Book histogram.
-  TNtuple* Lc = new TNtuple("Lc", "", "m:pt:y");
-  TNtuple* D0 = new TNtuple("D0", "", "m:pt:y");
+  TNtuple* Lc = new TNtuple("Lc", "", "m:pt:y:nch");
+  TNtuple* D0 = new TNtuple("D0", "", "m:pt:y:nch");
   TNtuple* B = new TNtuple("B", "", "m:pt:y");
   TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
   TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
@@ -138,39 +138,46 @@ int main(int argc, char* argv[]) {
   for (int iEvent = 0; iEvent < nevt; ++iEvent) {
     if (!pythia.next()) continue;
 
+    // charged multiplicity
+    int    nCh   = 0;
+    for (int i = 0; i < pythia.event.size(); ++i) {
+      if (pythia.event[i].isFinal() && pythia.event[i].isCharged()) 
+        ++nCh;
+    }
+
     for (int i = 0; i < pythia.event.size(); ++i)
       if (abs(pythia.event[i].id()) == 4122) {//.. Lc
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-          Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+        Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
 
-          //.. Lb->Lc
-          if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
-                      Lb_Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //.. Lb->Lc
+        if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
+          Lb_Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
       } else if(abs(pythia.event[i].id()) == 421) {//. D0
 
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-          D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+        D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
 
       } else if(abs(pythia.event[i].id()) == 511) { //.. B0
 
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-          B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+        B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
       } else if(abs(pythia.event[i].id()) == 5122) { //lambda_b
 
-          //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-          Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+        Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
       } else if(abs(pythia.event[i].id()) == 443) { // Lb->J/psi
 
-          if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
-                      Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
+          Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
       } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
 
-            //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-            B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+        B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
       } 
   }
 
