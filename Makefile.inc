@@ -2,10 +2,10 @@
 # Generated on Mon Jan 7 10:59:49 STD 2019 with the user supplied options:
 
 # Install directory prefixes.
-PREFIX_BIN=/home/pythia8240/pythia8240/bin
-PREFIX_INCLUDE=/home/pythia8240/pythia8240/include
-PREFIX_LIB=/home/pythia8240/pythia8240/lib
-PREFIX_SHARE=/home/pythia8240/pythia8240/share/Pythia8
+PREFIX_BIN=/home/pythia/bin
+PREFIX_INCLUDE=/home/pythia/include
+PREFIX_LIB=/home/pythia/lib
+PREFIX_SHARE=/home/pythia/share/Pythia8
 
 # Compilation flags (see ./configure --help for further documentation).
 ENABLE_SHARED=false

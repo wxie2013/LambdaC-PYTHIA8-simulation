@@ -30,11 +30,11 @@ endif
 
 # Check distribution (use local version first, then installed version).
 ifneq ("$(wildcard ../lib/libpythia8.*)","")
-  PREFIX_LIB=/home/pythia8240/lib
-  PREFIX_INCLUDE=/home/pythia8240/include
+  PREFIX_LIB=/home/pythia/lib
+  PREFIX_INCLUDE=/home/pythia/include
 endif
-PREFIX_LIB=/home/pythia8240/lib
-PREFIX_INCLUDE=/home/pythia8240/include
+PREFIX_LIB=/home/pythia/lib
+PREFIX_INCLUDE=/home/pythia/include
 CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON)
 CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl 
 
