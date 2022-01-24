@@ -54,8 +54,8 @@ int main(int argc, char* argv[]) {
   // Color reconnection tune (CR) mode0 
   //pythia.readString("Tune:pp 14");
   //pythia.readString("Tune:ee 7");
-  //pythia.readString("MultipartonInteractions:ecmPow=0.25208");
-  //pythia.readString("MultipartonInteractions:expPow=1.6");
+  //pythia.readString("MultipartonInteractions:ecmPow=0.215");
+  //pythia.readString("MultipartonInteractions:expPow=1.85");
   //pythia.readString("StringPT:sigma =0.335");
   //pythia.readString("StringZ:aLund =0.36");
   //pythia.readString("StringZ:bLund =0.56");
@@ -75,6 +75,8 @@ int main(int argc, char* argv[]) {
   // Color reconnection tune (CR) mode2 
   pythia.readString("Tune:pp 14");
   pythia.readString("Tune:ee 7");
+  pythia.readString("MultipartonInteractions:ecmPow=0.215");
+  pythia.readString("MultipartonInteractions:expPow=1.85");
   pythia.readString("StringPT:sigma =0.335");
   pythia.readString("StringZ:aLund =0.36");
   pythia.readString("StringZ:bLund =0.56");
@@ -99,8 +101,8 @@ int main(int argc, char* argv[]) {
   //pythia.readString("Tune:pp 14");
   //pythia.readString("Tune:ee 7");
   //pythia.readString("MultipartonInteractions:pT0Ref=2.4024");
-  //pythia.readString("MultipartonInteractions:ecmPow=0.25208");
-  //pythia.readString("MultipartonInteractions:expPow=1.6");
+  //pythia.readString("MultipartonInteractions:ecmPow=0.215");
+  //pythia.readString("MultipartonInteractions:expPow=1.85");
   //pythia.readString("StringPT:sigma =0.335");
   //pythia.readString("StringZ:aLund =0.36");
   //pythia.readString("StringZ:bLund =0.56");
