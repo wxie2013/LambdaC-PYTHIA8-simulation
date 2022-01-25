@@ -29,12 +29,6 @@ ifeq ($(GZIP_USE),true)
 endif
 
 # Check distribution (use local version first, then installed version).
-ifneq ("$(wildcard ../lib/libpythia8.*)","")
-  PREFIX_LIB=/home/pythia/lib
-  PREFIX_INCLUDE=/home/pythia/include
-endif
-PREFIX_LIB=/home/pythia/lib
-PREFIX_INCLUDE=/home/pythia/include
 CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON)
 CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl 
 
@@ -65,8 +59,8 @@ main% : main%.cc $(PREFIX_LIB)/libpythia8.a
 	$(CXX) $< -o $@ $(CXX_COMMON) $(GZIP_INC) $(GZIP_FLAGS)
 
 LcD0ratio: LcD0ratio.C $(PREFIX_LIB)/libpythia8.a
-	$(CXX) $< -o $@ -w -I$(PREFIX_INCLUDE) -I$(ROOT_INCLUDE) $(CXX_COMMON)\
-		`$(ROOTBIN)root-config --cflags`\
+	$(CXX) $< -o $@ -w  -I$(PREFIX_INCLUDE) -I$(ROOT_INCLUDE) $(CXX_COMMON)\
+		`$(ROOT_BIN)/root-config --cflags`\
 		-Wl,-rpath,$(ROOT_LIB) `$(ROOT_BIN)/root-config --glibs`
 
 # Internally used tests, without external dependencies.
