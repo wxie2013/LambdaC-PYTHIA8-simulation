@@ -128,12 +128,12 @@ int main(int argc, char* argv[]) {
 
   // Book histogram.
   TNtuple* Lc = new TNtuple("Lc", "", "m:pt:y:nch");
-  TNtuple* D0 = new TNtuple("D0", "", "m:pt:y:nch");
-  TNtuple* B = new TNtuple("B", "", "m:pt:y");
-  TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
-  TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
-  TNtuple* Lb_Lc = new TNtuple("Lb_Lc", "", "m:pt:y");
-  TNtuple* Lb_jpsi = new TNtuple("Lb_jpsi", "", "m:pt:y");
+  TNtuple* B2Lc = new TNtuple("B2Lc", "", "m:pt:y:nch:mpt:my:mid");
+  //TNtuple* D0 = new TNtuple("D0", "", "m:pt:y:nch");
+  //TNtuple* B = new TNtuple("B", "", "m:pt:y");
+  //TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
+  //TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
+  //TNtuple* Lb_jpsi = new TNtuple("Lb_jpsi", "", "m:pt:y");
   //TNtuple* nt = new TNtuple("nt", "", "m:pt:y");
 
   // Begin event loop. Generate event; skip if generation aborted.
@@ -149,38 +149,71 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < pythia.event.size(); ++i)
       if (abs(pythia.event[i].id()) == 4122) {//.. Lc
-        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+
+        // inclusive Lc
         Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
 
-        //.. Lb->Lc
-        if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
-          Lb_Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+        // B->Lc
+        int midx = pythia.event[i].mother1();  // mother index
+        if(abs(pythia.event[midx].id())==5122 || abs(pythia.event[midx].id())==511  || 
+           abs(pythia.event[midx].id())==521  || abs(pythia.event[midx].id())==10511|| 
+           abs(pythia.event[midx].id())==10521|| abs(pythia.event[midx].id())==513  || 
+           abs(pythia.event[midx].id())==523  || abs(pythia.event[midx].id())==10513|| 
+           abs(pythia.event[midx].id())==10523|| abs(pythia.event[midx].id())==20513|| 
+           abs(pythia.event[midx].id())==20523|| abs(pythia.event[midx].id())==515  || 
+           abs(pythia.event[midx].id())==525  || abs(pythia.event[midx].id())==531  || 
+           abs(pythia.event[midx].id())==10531|| abs(pythia.event[midx].id())==533  || 
+           abs(pythia.event[midx].id())==10533|| abs(pythia.event[midx].id())==20533|| 
+           abs(pythia.event[midx].id())==535  || abs(pythia.event[midx].id())==541  || 
+           abs(pythia.event[midx].id())==10541|| abs(pythia.event[midx].id())==543  || 
+           abs(pythia.event[midx].id())==10543|| abs(pythia.event[midx].id())==20543|| 
+           abs(pythia.event[midx].id())==545)  // all B hadrons from PDG manual
+        {
+          float mpt = pythia.event[midx].pT();  // mother pT
+          float my = pythia.event[midx].y();  // mother y
+          int mid = pythia.event[midx].id();  // mother PDG id
 
-      } else if(abs(pythia.event[i].id()) == 421) {//. D0
-
-        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-        D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
-
-      } else if(abs(pythia.event[i].id()) == 511) { //.. B0
-
-        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-        B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-
-      } else if(abs(pythia.event[i].id()) == 5122) { //lambda_b
-
-        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-        Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-
-      } else if(abs(pythia.event[i].id()) == 443) { // Lb->J/psi
-
-        if(abs(pythia.event[i].mother1())==5122 || abs(pythia.event[i].mother2())==5122)
-          Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-
-      } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
-
-        //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-        B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+          B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mid);
+        }
       } 
+     // else if(abs(pythia.event[i].id()) == 421) {//. D0
+
+     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+     //   D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
+
+     // } else if(abs(pythia.event[i].id()) == 511) { //.. B0
+
+     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+     //   B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
+     // } else if(abs(pythia.event[i].id()) == 5122) { //lambda_b
+
+     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+     //   Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
+     // } else if(abs(pythia.event[i].id()) == 443) { // Lb->J/psi
+
+     //   int midx = pythia.event[i].mother1();  // mother index
+     //   if(abs(pythia.event[midx].id())==5122 || abs(pythia.event[midx].id())==511  || 
+     //      abs(pythia.event[midx].id())==521  || abs(pythia.event[midx].id())==10511|| 
+     //      abs(pythia.event[midx].id())==10521|| abs(pythia.event[midx].id())==513  || 
+     //      abs(pythia.event[midx].id())==523  || abs(pythia.event[midx].id())==10513|| 
+     //      abs(pythia.event[midx].id())==10523|| abs(pythia.event[midx].id())==20513|| 
+     //      abs(pythia.event[midx].id())==20523|| abs(pythia.event[midx].id())==515  || 
+     //      abs(pythia.event[midx].id())==525  || abs(pythia.event[midx].id())==531  || 
+     //      abs(pythia.event[midx].id())==10531|| abs(pythia.event[midx].id())==533  || 
+     //      abs(pythia.event[midx].id())==10533|| abs(pythia.event[midx].id())==20533|| 
+     //      abs(pythia.event[midx].id())==535  || abs(pythia.event[midx].id())==541  || 
+     //      abs(pythia.event[midx].id())==10541|| abs(pythia.event[midx].id())==543  || 
+     //      abs(pythia.event[midx].id())==10543|| abs(pythia.event[midx].id())==20543|| 
+     //      abs(pythia.event[midx].id())==545)
+     //     Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+
+     // } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
+
+     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
+     //   B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+     // } 
   }
 
   // Statistics on event generation.
@@ -189,12 +222,12 @@ int main(int argc, char* argv[]) {
   cout<<" cs: "<<pythia.info.sigmaGen()<<" weight: "<<pythia.info.nAccepted()<<endl;
 
   Lc->Write();
-  D0->Write();
-  B->Write();
-  B0->Write();
-  Lb->Write();
-  Lb_Lc->Write();
-  Lb_jpsi->Write();
+  B2Lc->Write();
+  //D0->Write();
+  //B->Write();
+  //B0->Write();
+  //Lb->Write();
+  //Lb_jpsi->Write();
   delete outFile;
 
   // Done.
