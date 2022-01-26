@@ -127,8 +127,9 @@ int main(int argc, char* argv[]) {
   TFile* outFile = new TFile(filename, "RECREATE");
 
   // Book histogram.
-  TNtuple* Lc = new TNtuple("Lc", "", "m:pt:y:nch");
-  TNtuple* B2Lc = new TNtuple("B2Lc", "", "m:pt:y:nch:mpt:my:mid");
+  TNtuple* Lc = new TNtuple("Lc", "inclusive Lc", "m:pt:y:nch");
+  TNtuple* B2Lc = new TNtuple("B2Lc", "B->Lc", "m:pt:y:nch:mpt:my:mid");
+  TNtuple* B = new TNtuple("B", "all B hadrons", "m:pt:y:id:nch");
   //TNtuple* D0 = new TNtuple("D0", "", "m:pt:y:nch");
   //TNtuple* B = new TNtuple("B", "", "m:pt:y");
   //TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
@@ -147,7 +148,7 @@ int main(int argc, char* argv[]) {
         ++nCh;
     }
 
-    for (int i = 0; i < pythia.event.size(); ++i)
+    for (int i = 0; i < pythia.event.size(); ++i) {
       if (abs(pythia.event[i].id()) == 4122) {//.. Lc
 
         // inclusive Lc
@@ -175,7 +176,24 @@ int main(int argc, char* argv[]) {
 
           B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mid);
         }
-      } 
+      } else if(
+          abs(pythia.event[i].id())==5122 || abs(pythia.event[i].id())==511  || 
+          abs(pythia.event[i].id())==521  || abs(pythia.event[i].id())==10511|| 
+          abs(pythia.event[i].id())==10521|| abs(pythia.event[i].id())==513  || 
+          abs(pythia.event[i].id())==523  || abs(pythia.event[i].id())==10513|| 
+          abs(pythia.event[i].id())==10523|| abs(pythia.event[i].id())==20513|| 
+          abs(pythia.event[i].id())==20523|| abs(pythia.event[i].id())==515  || 
+          abs(pythia.event[i].id())==525  || abs(pythia.event[i].id())==531  || 
+          abs(pythia.event[i].id())==10531|| abs(pythia.event[i].id())==533  || 
+          abs(pythia.event[i].id())==10533|| abs(pythia.event[i].id())==20533|| 
+          abs(pythia.event[i].id())==535  || abs(pythia.event[i].id())==541  || 
+          abs(pythia.event[i].id())==10541|| abs(pythia.event[i].id())==543  || 
+          abs(pythia.event[i].id())==10543|| abs(pythia.event[i].id())==20543|| 
+          abs(pythia.event[i].id())==545)  // all B hadrons from PDG manual
+      {
+          B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pythia.event[i].id(), nCh);
+      }
+
      // else if(abs(pythia.event[i].id()) == 421) {//. D0
 
      //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
@@ -209,11 +227,8 @@ int main(int argc, char* argv[]) {
      //      abs(pythia.event[midx].id())==545)
      //     Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
-     // } else if(abs((int(pythia.event[i].id()/100)%10)) == 5 || abs((int(pythia.event[i].id()/1000)%10))==5) {
-
-     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-     //   B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
      // } 
+    }
   }
 
   // Statistics on event generation.
@@ -223,8 +238,8 @@ int main(int argc, char* argv[]) {
 
   Lc->Write();
   B2Lc->Write();
+  B->Write();
   //D0->Write();
-  //B->Write();
   //B0->Write();
   //Lb->Write();
   //Lb_jpsi->Write();
