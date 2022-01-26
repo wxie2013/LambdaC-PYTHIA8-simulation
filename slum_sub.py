@@ -34,7 +34,7 @@ def submit_jobs(base_dir, njobs, nevt):
         job_name = 'job'+str(i)
         subfile = build_job_files(base_dir, job_name, nevt)
 
-        os.system("sbatch  --time=1:00:00 --nodes=1 -A standby "+subfile)
+        os.system("sbatch  --time=4:00:00 --nodes=1 -A standby "+subfile)
         #os.system("sbatch  --time=100:00:00  -A physics "+subfile)
 
         # random seed based on machine time. Add some delay to avoid two jobs 
@@ -43,7 +43,8 @@ def submit_jobs(base_dir, njobs, nevt):
 
 # running the script:  python3 slum_sub.py
 if __name__ == "__main__":
-    njobs = 10
+    njobs = 1000
     nevt = 1000000
-    base_dir ='/scratch/halstead/w/wxie/B2Lc'
+    #base_dir ='/scratch/halstead/w/wxie/B2Lc'
+    base_dir ='/scratch/brown/wxie/B2Lc'
     submit_jobs(base_dir, njobs, nevt)
