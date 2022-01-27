@@ -26,9 +26,9 @@ void cross_B2Lc()
 
     float lum = N_pp/sig_pp;
 
-    int nbin = 200;
+    int nbin = 100;
     float low = 0;
-    float high = 200;
+    float high = 100;
     TH1 *hLc = new TH1D("hLc","incl. Lc", nbin, low, high);
     TH1 *hB2Lc = new TH1D("hB2Lc","B->Lc", nbin, low, high);
     TH1 *hB = new TH1D("hB","incl. B-hadron", nbin, low, high);
