@@ -149,83 +149,51 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < pythia.event.size(); ++i) {
-      if (abs(pythia.event[i].id()) == 4122) {//.. Lc
+      int pid = pythia.event[i].id();
+      if (abs(pid) == 4122) {//.. Lc
 
         // inclusive Lc
         Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
 
         // B->Lc
         int midx = pythia.event[i].mother1();  // mother index
-        if(abs(pythia.event[midx].id())==5122 || abs(pythia.event[midx].id())==511  || 
-           abs(pythia.event[midx].id())==521  || abs(pythia.event[midx].id())==10511|| 
-           abs(pythia.event[midx].id())==10521|| abs(pythia.event[midx].id())==513  || 
-           abs(pythia.event[midx].id())==523  || abs(pythia.event[midx].id())==10513|| 
-           abs(pythia.event[midx].id())==10523|| abs(pythia.event[midx].id())==20513|| 
-           abs(pythia.event[midx].id())==20523|| abs(pythia.event[midx].id())==515  || 
-           abs(pythia.event[midx].id())==525  || abs(pythia.event[midx].id())==531  || 
-           abs(pythia.event[midx].id())==10531|| abs(pythia.event[midx].id())==533  || 
-           abs(pythia.event[midx].id())==10533|| abs(pythia.event[midx].id())==20533|| 
-           abs(pythia.event[midx].id())==535  || abs(pythia.event[midx].id())==541  || 
-           abs(pythia.event[midx].id())==10541|| abs(pythia.event[midx].id())==543  || 
-           abs(pythia.event[midx].id())==10543|| abs(pythia.event[midx].id())==20543|| 
-           abs(pythia.event[midx].id())==545)  // all B hadrons from PDG manual
-        {
+        int mpid = pythia.event[midx].id();  // mother pid
+        if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {//1st: meson, 2nd: baryon
           float mpt = pythia.event[midx].pT();  // mother pT
           float my = pythia.event[midx].y();  // mother y
-          int mid = pythia.event[midx].id();  // mother PDG id
 
-          B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mid);
+          B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mpid);
         }
-      } else if(
-          abs(pythia.event[i].id())==5122 || abs(pythia.event[i].id())==511  || 
-          abs(pythia.event[i].id())==521  || abs(pythia.event[i].id())==10511|| 
-          abs(pythia.event[i].id())==10521|| abs(pythia.event[i].id())==513  || 
-          abs(pythia.event[i].id())==523  || abs(pythia.event[i].id())==10513|| 
-          abs(pythia.event[i].id())==10523|| abs(pythia.event[i].id())==20513|| 
-          abs(pythia.event[i].id())==20523|| abs(pythia.event[i].id())==515  || 
-          abs(pythia.event[i].id())==525  || abs(pythia.event[i].id())==531  || 
-          abs(pythia.event[i].id())==10531|| abs(pythia.event[i].id())==533  || 
-          abs(pythia.event[i].id())==10533|| abs(pythia.event[i].id())==20533|| 
-          abs(pythia.event[i].id())==535  || abs(pythia.event[i].id())==541  || 
-          abs(pythia.event[i].id())==10541|| abs(pythia.event[i].id())==543  || 
-          abs(pythia.event[i].id())==10543|| abs(pythia.event[i].id())==20543|| 
-          abs(pythia.event[i].id())==545)  // all B hadrons from PDG manual
+      } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) &&  
+          abs(int(pid))!=5101 && abs(int(pid))!=5103 && abs(int(pid))!=5201 && abs(int(pid))!= 5203 && 
+          abs(int(pid))!=5301 && abs(int(pid))!=5303 && abs(int(pid))!=5401 && abs(int(pid))!=5403 && abs(int(pid))!=5503)
       {
-          B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pythia.event[i].id(), nCh);
+        // don't include di-quarks 
+          B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pid, nCh);
       }
 
-     // else if(abs(pythia.event[i].id()) == 421) {//. D0
+     // else if(abs(pid) == 421) {//. D0
 
      //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
      //   D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
 
-     // } else if(abs(pythia.event[i].id()) == 511) { //.. B0
+     // } else if(abs(pid) == 511) { //.. B0
 
      //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
      //   B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
-     // } else if(abs(pythia.event[i].id()) == 5122) { //lambda_b
+     // } else if(abs(pid) == 5122) { //lambda_b
 
      //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
      //   Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
 
-     // } else if(abs(pythia.event[i].id()) == 443) { // Lb->J/psi
+     // } else if(abs(pid) == 443) { // Lb->J/psi
 
      //   int midx = pythia.event[i].mother1();  // mother index
-     //   if(abs(pythia.event[midx].id())==5122 || abs(pythia.event[midx].id())==511  || 
-     //      abs(pythia.event[midx].id())==521  || abs(pythia.event[midx].id())==10511|| 
-     //      abs(pythia.event[midx].id())==10521|| abs(pythia.event[midx].id())==513  || 
-     //      abs(pythia.event[midx].id())==523  || abs(pythia.event[midx].id())==10513|| 
-     //      abs(pythia.event[midx].id())==10523|| abs(pythia.event[midx].id())==20513|| 
-     //      abs(pythia.event[midx].id())==20523|| abs(pythia.event[midx].id())==515  || 
-     //      abs(pythia.event[midx].id())==525  || abs(pythia.event[midx].id())==531  || 
-     //      abs(pythia.event[midx].id())==10531|| abs(pythia.event[midx].id())==533  || 
-     //      abs(pythia.event[midx].id())==10533|| abs(pythia.event[midx].id())==20533|| 
-     //      abs(pythia.event[midx].id())==535  || abs(pythia.event[midx].id())==541  || 
-     //      abs(pythia.event[midx].id())==10541|| abs(pythia.event[midx].id())==543  || 
-     //      abs(pythia.event[midx].id())==10543|| abs(pythia.event[midx].id())==20543|| 
-     //      abs(pythia.event[midx].id())==545)
+     //   int mpid = pythia.event[midx].id();  // mother pid
+     //   if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {//1st: meson, 2nd: baryon
      //     Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
+     //     }
 
      // } 
     }
