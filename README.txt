@@ -1,3 +1,3 @@
 ->make LcD0ratio
-->./run
+->./run  or python3 slum_sub.py
 ->./merge
