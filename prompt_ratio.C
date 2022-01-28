@@ -3,7 +3,7 @@
 void prompt_ratio()
 {
   TFile result("root_file/result_prompt_ratio.root", "RECREATE");
-  TFile f0("root_file/tot_1B_CR2_soft_diffraction_on.root");
+  TFile f0("/depot/cms/users/wxie/B2Lc/tot_1B_CR2_soft_non_diff_on.root");
   TFile f1("root_file/inc_bhadron_weight.root");
   TFile f2("root_file/cross_B2Lc.root");
   TFile f3("root_file/prompt_pt2_pt4_pt10_combine_fifthturn.root"); // accp*eff prompt Lc
