@@ -1,7 +1,7 @@
 {
-  TFile f0("FONLL_Bhadron_y7.root");
-  TFile f1("cross_B2Lc.root");
-  TFile* result = new TFile("inc_bhadron_weight.root", "recreate");
+  TFile f0("root_file/FONLL_Bhadron_y7.root");
+  TFile f1("root_file/cross_B2Lc.root");
+  TFile* result = new TFile("root_file/inc_bhadron_weight.root", "recreate");
 
   TH1D* hB = (TH1D*)f1.Get("hB")->Clone();
   TGraph* FONLL_Bhadrons_crosssection = (TGraph*)f0.Get("FONLL_Bhadrons_crosssection")->Clone();

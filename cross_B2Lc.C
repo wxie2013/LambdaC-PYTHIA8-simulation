@@ -17,7 +17,7 @@ void divideBinWidth(TH1* h)
 //
 void cross_B2Lc()
 {
-    TFile *f_in = new TFile("tot_1B_CR2_soft_diffraction_on.root");
+    TFile *f_in = new TFile("/depot/cms/users/wxie/B2Lc/tot_1B_CR2_soft_non_diff_on.root");
 
     TNtuple* Lc = (TNtuple*)f_in->Get("Lc")->Clone("Lc");
     TNtuple* B2Lc = (TNtuple*)f_in->Get("B2Lc")->Clone("B2Lc");
@@ -48,7 +48,7 @@ void cross_B2Lc()
     hB2Lc->Scale(1/(lum*2));
     hLc->Scale(1/(lum*2));
 
-    TFile *f_out = new TFile("cross_B2Lc.root", "recreate");
+    TFile *f_out = new TFile("root_file/cross_B2Lc.root", "recreate");
     hB2Lc->Write();
     hLc->Write();
     hB->Write();
