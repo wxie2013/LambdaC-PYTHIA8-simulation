@@ -1,3 +1,6 @@
+#include "common.h"
+
+//
 void divideBinWidth(TH1* h)
 {
     for(int i=1;i<=h->GetNbinsX();i++)
@@ -11,7 +14,7 @@ void divideBinWidth(TH1* h)
     }   
 }
 
-
+//
 void cross_B2Lc()
 {
     TFile *f_in = new TFile("tot_1B_CR2_soft_diffraction_on.root");
@@ -29,9 +32,9 @@ void cross_B2Lc()
     int nbin = 100;
     float low = 0;
     float high = 100;
-    TH1 *hLc = new TH1D("hLc","incl. Lc", nbin, low, high);
-    TH1 *hB2Lc = new TH1D("hB2Lc","B->Lc", nbin, low, high);
-    TH1 *hB = new TH1D("hB","incl. B-hadron", nbin, low, high);
+    TH1 *hLc = new TH1D("hLc","incl. Lc", nbins, bin_edge);
+    TH1 *hB2Lc = new TH1D("hB2Lc","B->Lc", nbins, bin_edge);
+    TH1 *hB = new TH1D("hB","incl. B-hadron", 100, 0, 100);
 
     B->Project("hB", "pt");
     B2Lc->Project("hB2Lc", "pt", "abs(y)<1");
