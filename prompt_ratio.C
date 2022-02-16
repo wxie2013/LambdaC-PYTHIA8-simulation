@@ -9,6 +9,7 @@ void prompt_ratio()
   TFile f3("root_file/prompt_pt2_pt4_pt10_combine_fifthturn.root"); // accp*eff prompt Lc
   TFile f4("root_file/nonprompt_pt2_pt4_pt10_combine.root"); // accp*eff non-prompt Lc
 
+  f0.cd(); //ROOT bug. need to add this to avoid crash
   TNtuple* Lc = (TNtuple*)f0.Get("Lc")->Clone("Lc");
   TNtuple* B2Lc = (TNtuple*)f0.Get("B2Lc")->Clone("B2Lc");
   TH1D* hweight = (TH1D*) f1.Get("hweight")->Clone("hweight");
@@ -44,6 +45,8 @@ void prompt_ratio()
 
     h_B2Lc_FONLL->Fill(pt, weight);
   }
+  divideBinWidth(h_B2Lc_FONLL);
+  h_B2Lc_FONLL->Scale(1/(lum*2));
 
   // now apply accp*eff 
   h_prompt->Multiply(eff_prompt);
