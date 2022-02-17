@@ -4,7 +4,9 @@ const float mpt_fit_low = 26; //lower edge of weight fit
 const float mpt_fit_high = 100; //upper edge of weight fit above which too large fluctuation
 
 const int N_pp = 1e9;
-const float sig_pp = 4.772e10; // unit: pb
+//const int N_pp = 4e6;
+const float sig_pp = 4.772e10; // unit: pb (SoftQCD_nonDiffractive = on)
+//const float sig_pp = 1.005e+12; // unit: pb(HardQCD_ON)
 
 float lum = N_pp/sig_pp;
 
