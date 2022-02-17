@@ -13,7 +13,7 @@ void cross_B2Lc()
     TH1 *hB2Lc = new TH1D("hB2Lc","B->Lc", nbins, bin_edge);
     TH1 *hB = new TH1D("hB","incl. B-hadron", 100, 0, 100);
 
-    B->Project("hB", "pt");
+    B->Project("hB", "pt", "abs(y)<2"); // |y(B)|<2 for all |y(Lc)|<1
     B2Lc->Project("hB2Lc", "pt", "abs(y)<1");
     Lc->Project("hLc", "pt", "abs(y)<1");
 

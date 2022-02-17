@@ -41,19 +41,15 @@ int main(int argc, char* argv[]) {
   //pythia.readString("HardQCD:all = on");
   pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
   // the following is the Monash tune
-  //pythia.readString("Tune:pp 14");
   //pythia.readString("Tune:ee 7");
+  //pythia.readString("Tune:pp 14");
 
-  // the following is the CUEP8M1 tune
-  //pythia.readString("Tune:pp 14");
-  //pythia.readString("Tune:ee 7");
-  //pythia.readString("MultipartonInteractions:ecmPow=0.25208");
-  //pythia.readString("MultipartonInteractions:expPow=1.6");
-  //pythia.readString("MultiPartonInteractions:pT0Ref =2.4024");
+  // the following is the CUETP8M1 tune
+  //pythia.readString("Tune:pp 18");
 
   // Color reconnection tune (CR) mode0 
-  //pythia.readString("Tune:pp 14");
   //pythia.readString("Tune:ee 7");
+  //pythia.readString("Tune:pp 14");
   //pythia.readString("MultipartonInteractions:ecmPow=0.215");
   //pythia.readString("MultipartonInteractions:expPow=1.85");
   //pythia.readString("StringPT:sigma =0.335");
@@ -73,8 +69,8 @@ int main(int argc, char* argv[]) {
   //pythia.readString("ColourReconnection:timeDilationMode=0");
 
   // Color reconnection tune (CR) mode2 
-  pythia.readString("Tune:pp 14");
   pythia.readString("Tune:ee 7");
+  pythia.readString("Tune:pp 14");
   pythia.readString("MultipartonInteractions:ecmPow=0.215");
   pythia.readString("MultipartonInteractions:expPow=1.85");
   pythia.readString("StringPT:sigma =0.335");
@@ -93,32 +89,6 @@ int main(int argc, char* argv[]) {
   pythia.readString("ColourReconnection:junctionCorrection=1.2");
   pythia.readString("ColourReconnection:timeDilationMode=2");
   pythia.readString("ColourReconnection:timeDilationPar=0.18");
-
-  // the following is the ALICE's mode0 (private communication)
-  //pythia.readString("HardQCD:all = OFF");
-  //pythia.readString("HardQCD:gg2ccbar = on");
-  //pythia.readString("HardQCD:qqbar2ccbar = on");
-  //pythia.readString("Tune:pp 14");
-  //pythia.readString("Tune:ee 7");
-  //pythia.readString("MultipartonInteractions:pT0Ref=2.4024");
-  //pythia.readString("MultipartonInteractions:ecmPow=0.215");
-  //pythia.readString("MultipartonInteractions:expPow=1.85");
-  //pythia.readString("StringPT:sigma =0.335");
-  //pythia.readString("StringZ:aLund =0.36");
-  //pythia.readString("StringZ:bLund =0.56");
-  //pythia.readString("StringFlav:probQQtoQ =0.078");
-  //pythia.readString("StringFlav:ProbStoUD =0.2");
-  //pythia.readString("StringFlav:probQQ1toQQ0join = 0.0275,0.0275,0.0275, 0.0275");
-  //pythia.readString("MultiPartonInteractions:pT0Ref =2.12");
-  //pythia.readString("BeamRemnants:remnantMode =1");
-  //pythia.readString("BeamRemnants:saturation= 5");
-  //pythia.readString("ColourReconnection:mode = 1");
-  //pythia.readString("ColourReconnection:allowDoubleJunRem =off");
-  //pythia.readString("ColourReconnection:m0=2.9");
-  //pythia.readString("ColourReconnection:allowJunctions =on");
-  //pythia.readString("ColourReconnection:junctionCorrection=1.43");
-  //pythia.readString("ColourReconnection:timeDilationMode=0");
-
 
   pythia.init();
 
