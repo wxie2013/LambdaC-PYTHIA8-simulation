@@ -19,8 +19,9 @@ int main(int argc, char* argv[]) {
 
   char* filename = argv[1];
   int nevt = atoi(argv[2]);
+  int seed = atoi(argv[3]);
 
-  cout<<"outfile: "<<filename<<" nevt: "<<nevt<<endl;
+  cout<<"outfile: "<<filename<<" nevt: "<<nevt<<" seed: "<<seed<<endl;
 
   // Create the ROOT application environment.
   TApplication theApp("hist", &argc, argv);
@@ -31,15 +32,16 @@ int main(int argc, char* argv[]) {
 
   //Pick new random number seed for each run, based on clock.
   pythia.readString("Random:setSeed = on");
-  pythia.readString("Random:seed = 0");
+  string set_seed = "Random:seed ="+std::to_string(seed);
+  pythia.readString(set_seed.c_str());
 
   pythia.readString("PhaseSpace:pTHatMin = 0.");
   pythia.readString("Beams:eCM = 5020.");
   //pythia.readString("Beams:eCM = 200.");
   //pythia.readString("Beams:eCM = 7000.");
   //
-  //pythia.readString("HardQCD:all = on");
-  pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
+  pythia.readString("HardQCD:all = on");
+  //pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
   // the following is the Monash tune
   //pythia.readString("Tune:ee 7");
   //pythia.readString("Tune:pp 14");
