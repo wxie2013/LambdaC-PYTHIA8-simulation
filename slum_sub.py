@@ -1,6 +1,6 @@
 import os, time 
 
-def build_job_files(base_dir, job_name, nevt): 
+def build_job_files(base_dir, job_name, nevt, seed): 
 
     subfile = base_dir+'/job_file/'+job_name+'.sub'
     if os.path.isdir(base_dir) == False:
@@ -22,7 +22,7 @@ def build_job_files(base_dir, job_name, nevt):
     fsub.write('#SBATCH --job-name="'+job_name+'"\n') 
     fsub.write('cd /home/wxie/CMSSW_11_2_0_pre9' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
-    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+"\n")
+    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+"\n")
     fsub.close()
 
     return subfile
@@ -30,21 +30,20 @@ def build_job_files(base_dir, job_name, nevt):
 # submit jobs
 def submit_jobs(base_dir, njobs, nevt): 
 
+    seed = 1
     for i in range(njobs):
         job_name = 'job'+str(i)
-        subfile = build_job_files(base_dir, job_name, nevt)
+        subfile = build_job_files(base_dir, job_name, nevt, seed)
 
         os.system("sbatch  --time=4:00:00 --nodes=1 -A standby "+subfile)
         #os.system("sbatch  --time=100:00:00  -A physics "+subfile)
+        seed+=1
 
-        # random seed based on machine time. Add some delay to avoid two jobs 
-        # run at exactly the same time leading to duplication
-        time.sleep(0.5)
 
 # running the script:  python3 slum_sub.py
 if __name__ == "__main__":
     njobs = 1000
-    nevt = 1000000
-    #base_dir ='/scratch/halstead/w/wxie/B2Lc'
-    base_dir ='/scratch/brown/wxie/B2Lc'
+    nevt = 10000000
+    base_dir ='/scratch/halstead/w/wxie/B2Lc'
+    #base_dir ='/scratch/brown/wxie/B2Lc'
     submit_jobs(base_dir, njobs, nevt)
