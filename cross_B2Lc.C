@@ -3,7 +3,12 @@
 //
 void cross_B2Lc()
 {
-    TFile *f_in = new TFile("/depot/cms/users/wxie/B2Lc/tot_1B_CR2_soft_non_diff_on.root");
+    //string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON/tot_1B_CR2_soft_non_diff_on.root";
+    //string outfile = "root_file/cross_B2Lc_CR2_soft_non_diff_on.root";
+    string infile = "/depot/cms/users/wxie/B2Lc/CUETP8M1_HardQCD_ON/tot_10B_CUETP8M1_HardQCD_ON.root";
+    string outfile = "root_file/cross_B2Lc_CUETP8M1_HardQCD_ON.root";
+
+    TFile *f_in = new TFile(infile.c_str());
 
     TNtuple* Lc = (TNtuple*)f_in->Get("Lc")->Clone("Lc");
     TNtuple* B2Lc = (TNtuple*)f_in->Get("B2Lc")->Clone("B2Lc");
@@ -11,7 +16,10 @@ void cross_B2Lc()
 
     TH1 *hLc = new TH1D("hLc","incl. Lc", nbins, bin_edge);
     TH1 *hB2Lc = new TH1D("hB2Lc","B->Lc", nbins, bin_edge);
-    TH1 *hB = new TH1D("hB","incl. B-hadron", 100, 0, 100);
+    TH1 *hB = new TH1D("hB","incl. B-hadron", 400, 0, 100);
+    hLc->Sumw2();
+    hB2Lc->Sumw2();
+    hB->Sumw2();
 
     B->Project("hB", "pt", "abs(y)<2"); // |y(B)|<2 for all |y(Lc)|<1
     B2Lc->Project("hB2Lc", "pt", "abs(y)<1");
@@ -25,7 +33,7 @@ void cross_B2Lc()
     hB2Lc->Scale(1/(lum*2));
     hLc->Scale(1/(lum*2));
 
-    TFile *f_out = new TFile("root_file/cross_B2Lc.root", "recreate");
+    TFile *f_out = new TFile(outfile.c_str(), "recreate");
     hB2Lc->Write();
     hLc->Write();
     hB->Write();
