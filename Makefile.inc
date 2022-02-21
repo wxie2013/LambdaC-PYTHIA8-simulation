@@ -3,7 +3,7 @@
 
 # Install directory prefixes.
 #PY_HOME=/home/pythia
-PY_HOME=/home/wxie/pythia8302
+PY_HOME=/home/wxie/py8_evtgen_HepMC/
 PREFIX_BIN=$(PY_HOME)/bin
 PREFIX_INCLUDE=$(PY_HOME)/include
 PREFIX_LIB=$(PY_HOME)/lib
