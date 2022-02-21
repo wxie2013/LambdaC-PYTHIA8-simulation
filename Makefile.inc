@@ -2,8 +2,8 @@
 # Generated on Mon Jan 7 10:59:49 STD 2019 with the user supplied options:
 
 # Install directory prefixes.
-#PY_HOME=/home/pythia
-PY_HOME=/home/wxie/py8_evtgen_HepMC/
+PY_HOME=/home/py8_evtgen_HepMC/
+#PY_HOME=/home/wxie/pythia8302
 PREFIX_BIN=$(PY_HOME)/bin
 PREFIX_INCLUDE=$(PY_HOME)/include
 PREFIX_LIB=$(PY_HOME)/lib
