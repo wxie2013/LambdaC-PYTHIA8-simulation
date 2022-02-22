@@ -3,7 +3,7 @@ const float bin_edge[nbins+1] = {3, 4, 5, 6, 8, 10, 12.5, 15, 20, 30};
 const float mpt_fit_low = 26; //lower edge of weight fit
 const float mpt_fit_high = 100; //upper edge of weight fit above which too large fluctuation
 
-const float N_pp = 1.0e10;
+const float N_pp = 1.0e9;
 //const float sig_pp = 4.772e10; // unit: pb (SoftQCD_nonDiffractive = on)
 const float sig_pp = 1.005e+12; // unit: pb(HardQCD_ON)
 
