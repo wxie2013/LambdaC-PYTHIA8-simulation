@@ -59,9 +59,10 @@ main% : main%.cc $(PREFIX_LIB)/libpythia8.a
 	$(CXX) $< -o $@ $(CXX_COMMON) $(GZIP_INC) $(GZIP_FLAGS)
 
 LcD0ratio: LcD0ratio.C $(PREFIX_LIB)/libpythia8.a
-	$(CXX) $< -o $@ -w  -I$(PREFIX_INCLUDE) -I$(ROOT_INCLUDE) $(CXX_COMMON)\
+	$(CXX) $< -o $@ -w  -I$(PREFIX_INCLUDE) -I$(ROOT_INCLUDE) $(CXX_COMMON)  $(EVTGEN_INCLUDE) \
 		`$(ROOT_BIN)/root-config --cflags`\
-		-Wl,-rpath,$(ROOT_LIB) `$(ROOT_BIN)/root-config --glibs`
+		-Wl,-rpath,$(ROOT_LIB) `$(ROOT_BIN)/root-config --glibs` \
+		-DEVTGEN_PYTHIA -DEVTGEN_EXTERNAL $(EVTGEN_LIB)
 
 # Internally used tests, without external dependencies.
 test% : test%.cc $(PREFIX_LIB)/libpythia8.a

@@ -22,7 +22,8 @@ def build_job_files(base_dir, job_name, nevt, seed):
     fsub.write('#SBATCH --job-name="'+job_name+'"\n') 
     fsub.write('cd /home/wxie/CMSSW_11_2_0_pre9' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
-    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+"\n")
+    fsub.write('export PYTHIA8DATA=/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
+    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " true"+"\n")
     fsub.close()
 
     return subfile
@@ -42,8 +43,8 @@ def submit_jobs(base_dir, njobs, nevt):
 
 # running the script:  python3 slum_sub.py
 if __name__ == "__main__":
-    njobs = 1000
-    nevt = 10000000
+    njobs = 2000
+    nevt = 500000
     base_dir ='/scratch/halstead/w/wxie/B2Lc'
     #base_dir ='/scratch/brown/wxie/B2Lc'
     submit_jobs(base_dir, njobs, nevt)

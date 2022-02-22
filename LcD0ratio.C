@@ -2,6 +2,7 @@
 
 // Header file to access Pythia 8 program elements.
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/EvtGen.h"
 
 // ROOT, for histogramming.
 #include "TNtuple.h"
@@ -17,12 +18,33 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
+  // Check arguments.
+  if (argc != 5) {
+    cerr << " Unexpected number of command-line arguments. \n You are"
+         << " expected to provide the arguments \n"
+         << " 1. output file name \n"
+         << " 2. number of events to generate \n"
+         << " 3. random number seed \n"
+         << " 4. Flag to use EvtGen (true or false) \n"
+         << " Program stopped. " << endl;
+    return 1;
+  }
   char* filename = argv[1];
   int nevt = atoi(argv[2]);
   int seed = atoi(argv[3]);
+  bool useEvtGen(string(argv[4]) == "true");
 
-  cout<<"outfile: "<<filename<<" nevt: "<<nevt<<" seed: "<<seed<<endl;
+  cout<<"outfile: "<<filename<<" nevt: "<<nevt<<" seed: "<<seed<<" useEvtGen:"<<useEvtGen<<endl;
 
+  if(useEvtGen) {
+    cout<<"==============================================="<<endl;
+    cout<<"==        using EvtGen to decay              =="<<endl;
+    cout<<"==============================================="<<endl;
+  } else {
+    cout<<"==============================================="<<endl;
+    cout<<"==        using PYTHIA to decay              =="<<endl;
+    cout<<"==============================================="<<endl;
+  }
   // Create the ROOT application environment.
   TApplication theApp("hist", &argc, argv);
 
@@ -40,8 +62,8 @@ int main(int argc, char* argv[]) {
   //pythia.readString("Beams:eCM = 200.");
   //pythia.readString("Beams:eCM = 7000.");
   //
-  pythia.readString("HardQCD:all = on");
-  //pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
+  //pythia.readString("HardQCD:all = on");
+  pythia.readString("SoftQCD:nonDiffractive = on"); // shouldn't use HardQCD:all= on, which is only valid at high pT, e.g. pT > ~10 GeV/c
   // the following is the Monash tune
   //pythia.readString("Tune:ee 7");
   //pythia.readString("Tune:pp 14");
@@ -92,26 +114,31 @@ int main(int argc, char* argv[]) {
   pythia.readString("ColourReconnection:timeDilationMode=2");
   pythia.readString("ColourReconnection:timeDilationPar=0.18");
 
+  //
   pythia.init();
 
+  // Initialize EvtGen.
+  EvtGenDecays *evtgen = 0;
+  if (useEvtGen) {
+    //setenv("PYTHIA8DATA", "/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc", 1);
+    evtgen = new EvtGenDecays(&pythia, "/home/wxie/py8_evtgen_HepMC/share/EvtGen/DECAY.DEC", "/home/wxie/py8_evtgen_HepMC/share/EvtGen/evt.pdl");
+  }
+
+
   // Create file on which histogram(s) can be saved.
-  //TFile* outFile = new TFile("hist.root", "RECREATE");
   TFile* outFile = new TFile(filename, "RECREATE");
 
   // Book histogram.
   TNtuple* Lc = new TNtuple("Lc", "inclusive Lc", "m:pt:y:nch");
   TNtuple* B2Lc = new TNtuple("B2Lc", "B->Lc", "m:pt:y:nch:mpt:my:mid");
   TNtuple* B = new TNtuple("B", "all B hadrons", "m:pt:y:id:nch");
-  //TNtuple* D0 = new TNtuple("D0", "", "m:pt:y:nch");
-  //TNtuple* B = new TNtuple("B", "", "m:pt:y");
-  //TNtuple* B0 = new TNtuple("B0", "", "m:pt:y");
-  //TNtuple* Lb = new TNtuple("Lb", "", "m:pt:y");
-  //TNtuple* Lb_jpsi = new TNtuple("Lb_jpsi", "", "m:pt:y");
-  //TNtuple* nt = new TNtuple("nt", "", "m:pt:y");
 
   // Begin event loop. Generate event; skip if generation aborted.
   for (int iEvent = 0; iEvent < nevt; ++iEvent) {
     if (!pythia.next()) continue;
+
+    if(useEvtGen)
+      evtgen->decay();
 
     // charged multiplicity
     int    nCh   = 0;
@@ -130,44 +157,19 @@ int main(int argc, char* argv[]) {
         // B->Lc
         int midx = pythia.event[i].mother1();  // mother index
         int mpid = pythia.event[midx].id();  // mother pid
-        if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {//1st: meson, 2nd: baryon
+        if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {
           float mpt = pythia.event[midx].pT();  // mother pT
           float my = pythia.event[midx].y();  // mother y
 
           B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mpid);
         }
       } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) &&  
-          abs(int(pid))!=5101 && abs(int(pid))!=5103 && abs(int(pid))!=5201 && abs(int(pid))!= 5203 && 
-          abs(int(pid))!=5301 && abs(int(pid))!=5303 && abs(int(pid))!=5401 && abs(int(pid))!=5403 && abs(int(pid))!=5503)
-      {
-        // don't include di-quarks 
+          abs(int(pid))!=5101 && abs(int(pid))!=5103 && abs(int(pid))!=5201 && 
+          abs(int(pid))!= 5203 && abs(int(pid))!=5301 && abs(int(pid))!=5303 && 
+          abs(int(pid))!=5401 && abs(int(pid))!=5403 && abs(int(pid))!=5503)
+      { // don't include di-quarks 
           B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pid, nCh);
       }
-
-     // else if(abs(pid) == 421) {//. D0
-
-     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-     //   D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
-
-     // } else if(abs(pid) == 511) { //.. B0
-
-     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-     //   B0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-
-     // } else if(abs(pid) == 5122) { //lambda_b
-
-     //   //cout<<" +++"<<pythia.event[i].name()<<"++++"<<endl;
-     //   Lb->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-
-     // } else if(abs(pid) == 443) { // Lb->J/psi
-
-     //   int midx = pythia.event[i].mother1();  // mother index
-     //   int mpid = pythia.event[midx].id();  // mother pid
-     //   if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {//1st: meson, 2nd: baryon
-     //     Lb_jpsi->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y());
-     //     }
-
-     // } 
     }
   }
 
@@ -179,12 +181,9 @@ int main(int argc, char* argv[]) {
   Lc->Write();
   B2Lc->Write();
   B->Write();
-  //D0->Write();
-  //B0->Write();
-  //Lb->Write();
-  //Lb_jpsi->Write();
   delete outFile;
 
+  if(evtgen) delete evtgen;
   // Done.
   return 0;
 }
