@@ -3,12 +3,17 @@
 //
 void cross_B2Lc()
 {
-    //string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON/tot_1B_CR2_soft_non_diff_on.root";
+    //---------------------------------------------------------------------------------------
+    // Note: when switch files, need to update the N_pp and sig_pp in common.h correspondingly 
+    //---------------------------------------------------------------------------------------
+    string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B_EvtGen/tot_1B_CR2_soft_non_diff_on_EvtGen.root";
+    string outfile = "root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root";
+    //string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B/tot_1B_CR2_soft_non_diff_on.root";
     //string outfile = "root_file/cross_B2Lc_CR2_soft_non_diff_on.root";
-    //string infile = "/depot/cms/users/wxie/B2Lc/CUETP8M1_HardQCD_ON/tot_10B_CUETP8M1_HardQCD_ON.root";
+    //string infile = "/depot/cms/users/wxie/B2Lc/CUETP8M1_HardQCD_ON_10B/tot_10B_CUETP8M1_HardQCD_ON.root";
     //string outfile = "root_file/cross_B2Lc_CUETP8M1_HardQCD_ON.root";
-    string infile = "/depot/cms/users/wxie/B2Lc/CR2_HardQCD_ON/tot_5B_CR2_HardQCD_ON.root";
-    string outfile = "root_file/cross_B2Lc_CR2_HardQCD_ON.root";
+    //string infile = "/depot/cms/users/wxie/B2Lc/CR2_HardQCD_ON_5B/tot_5B_CR2_HardQCD_ON.root";
+    //string outfile = "root_file/cross_B2Lc_CR2_HardQCD_ON.root";
 
     TFile *f_in = new TFile(infile.c_str());
 

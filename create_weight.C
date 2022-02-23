@@ -1,3 +1,4 @@
+#include "common.h"
 // read FONLL txt file 
 TGraph read_FONLL_inc_Bhadron_Y_pm2()
 {
@@ -23,9 +24,14 @@ TGraph read_FONLL_inc_Bhadron_Y_pm2()
 //
 void create_weight()
 {
-  TFile f0("root_file/FONLL_Bhadron_y7.root");
-  TFile f1("root_file/cross_B2Lc.root");
-  TFile* result = new TFile("root_file/inc_bhadron_weight.root", "recreate");
+  //TFile f0("root_file/FONLL_Bhadron_y7.root");
+  string infile = "root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root";
+  string outfile = "root_file/inc_bhadron_weight_EvtGen.root";
+  //string infile = "root_file/cross_B2Lc_CR2_soft_non_diff_on.root";
+  //string outfile = "root_file/inc_bhadron_weight.root";
+
+  TFile f1(infile.c_str());
+  TFile* result = new TFile(outfile.c_str(), "recreate");
 
   TH1D* hB = (TH1D*)f1.Get("hB")->Clone();
   //TGraph* FONLL_Bhadrons_crosssection = (TGraph*)f0.Get("FONLL_Bhadrons_crosssection")->Clone(); // |y|<7
@@ -46,7 +52,7 @@ void create_weight()
   }
 
   //.. use fit function from 15-100 GeV/c to avoid fluctuation
-  hweight->Fit("pol1", "", "", 15, 100);
+  hweight->Fit("pol1", "", "", mpt_fit_low, mpt_fit_high);
   TF1* fun_btw_15_100GeV = hweight->GetFunction("pol1");
   fun_btw_15_100GeV->SetName("fun_btw_15_100GeV");
   result->cd();
