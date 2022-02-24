@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
   int seed = atoi(argv[3]);
   bool useEvtGen(string(argv[4]) == "true");
   string phys_process = argv[5];
-  string tune = argv[5];
+  string tune = argv[6];
 
   cout<<"outfile: "<<filename<<" nevt: "<<nevt<<" seed: "<<seed<<" useEvtGen:"<<useEvtGen<<endl;
 
