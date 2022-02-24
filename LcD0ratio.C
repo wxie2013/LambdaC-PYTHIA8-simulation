@@ -14,19 +14,23 @@
 // ROOT, for saving file.
 #include "TFile.h"
 
+bool debug = false;
+
 using namespace Pythia8;
+
+bool daughter_is_not_Bhadron(Pythia &py, int index1, int index2);
 
 int main(int argc, char* argv[]) {
 
   // Check arguments.
   if (argc != 5) {
     cerr << " Unexpected number of command-line arguments. \n You are"
-         << " expected to provide the arguments \n"
-         << " 1. output file name \n"
-         << " 2. number of events to generate \n"
-         << " 3. random number seed \n"
-         << " 4. Flag to use EvtGen (true or false) \n"
-         << " Program stopped. " << endl;
+      << " expected to provide the arguments \n"
+      << " 1. output file name \n"
+      << " 2. number of events to generate \n"
+      << " 3. random number seed \n"
+      << " 4. Flag to use EvtGen (true or false) \n"
+      << " Program stopped. " << endl;
     return 1;
   }
   char* filename = argv[1];
@@ -163,11 +167,12 @@ int main(int argc, char* argv[]) {
 
           B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mpid);
         }
-      } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) &&  
-          abs(int(pid))!=5101 && abs(int(pid))!=5103 && abs(int(pid))!=5201 && 
-          abs(int(pid))!= 5203 && abs(int(pid))!=5301 && abs(int(pid))!=5303 && 
-          abs(int(pid))!=5401 && abs(int(pid))!=5403 && abs(int(pid))!=5503)
-      { // don't include di-quarks 
+      } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5))
+      {// don't include di-quarks 
+        int dau_index1 =pythia.event[i].daughter1(); 
+        int dau_index2 = pythia.event[i].daughter2();
+        if(debug) cout<<"0___ pid: "<<pid<<endl;
+        if(daughter_is_not_Bhadron(pythia, dau_index1, dau_index2))  
           B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pid, nCh);
       }
     }
@@ -186,4 +191,39 @@ int main(int argc, char* argv[]) {
   if(evtgen) delete evtgen;
   // Done.
   return 0;
+}
+//
+bool daughter_is_not_Bhadron(Pythia &py, int index1, int index2)
+{
+  if(index1 < index2 && index1 >0) {
+    for(int i = index1; i<=index2; i++) {
+      int pid = py.event[i].id();
+      if(abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) {
+        if(debug) cout<<"1__: "<<pid<<endl;
+        return false;
+      }
+    }
+  } else if(index1 == index2 && index1>0) {
+    int pid = py.event[index1].id();
+    if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5)){
+      if(debug) cout<<"2__: "<<pid<<endl;
+      return false;
+    }
+  } else if(index2 < index1 && index2>0) {
+    for(int i = index2; i<=index1; i++) {
+      int pid = py.event[i].id();
+      if(abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) {
+        if(debug) cout<<"3__: "<<pid<<endl;
+        return false;
+      }
+    }
+  } else if(index1 >0 && index2==0) {
+    int pid = py.event[index1].id();
+    if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5)) {
+      if(debug) cout<<"4__: "<<pid<<endl;
+      return false;
+    }
+  }
+
+  return true;
 }
