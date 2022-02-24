@@ -53,11 +53,11 @@ void create_weight()
 
   //.. use fit function from 15-100 GeV/c to avoid fluctuation
   hweight->Fit("pol1", "", "", mpt_fit_low, mpt_fit_high);
-  TF1* fun_btw_15_100GeV = hweight->GetFunction("pol1");
-  fun_btw_15_100GeV->SetName("fun_btw_15_100GeV");
+  TF1* fun_btw = hweight->GetFunction("pol1");
+  fun_btw->SetName("fun_btw");
   result->cd();
   hweight->Write();
-  fun_btw_15_100GeV->Write();
+  fun_btw->Write();
   FONLL_Bhadrons_crosssection->Write();
   //result->Close();
 }
