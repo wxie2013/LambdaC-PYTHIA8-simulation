@@ -3,9 +3,9 @@
 void prompt_ratio()
 {
   TFile result("root_file/result_prompt_ratio.root", "RECREATE");
-  TFile f0("/depot/cms/users/wxie/B2Lc/tot_1B_CR2_soft_non_diff_on.root");
-  TFile f1("root_file/inc_bhadron_weight.root");
-  TFile f2("root_file/cross_B2Lc.root");
+  TFile f0("/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B_EvtGen/tot_1B_CR2_soft_non_diff_on_EvtGen.root");
+  TFile f1("root_file/inc_bhadron_weight_EvtGen.root");
+  TFile f2("root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root");
   TFile f3("root_file/prompt_pt2_pt4_pt10_combine_fifthturn.root"); // accp*eff prompt Lc
   TFile f4("root_file/nonprompt_pt2_pt4_pt10_combine.root"); // accp*eff non-prompt Lc
 
@@ -13,7 +13,7 @@ void prompt_ratio()
   TNtuple* Lc = (TNtuple*)f0.Get("Lc")->Clone("Lc");
   TNtuple* B2Lc = (TNtuple*)f0.Get("B2Lc")->Clone("B2Lc");
   TH1D* hweight = (TH1D*) f1.Get("hweight")->Clone("hweight");
-  TF1* fun_btw_15_100GeV = (TF1*) f1.Get("fun_btw_15_100GeV")->Clone("fun_btw_15_100GeV");
+  TF1* fun_btw = (TF1*) f1.Get("fun_btw")->Clone("fun_btw");
   TH1F* eff_prompt = (TH1F*)f3.Get("hrecoeff_combine")->Clone("eff_prompt");
   TH1F* eff_nonprompt = (TH1F*)f4.Get("hrecoeff_combine")->Clone("eff_nonprompt");
 
@@ -40,7 +40,7 @@ void prompt_ratio()
       int ib = hweight->FindBin(mpt);
       weight = hweight->GetBinContent(ib);
     } else {
-      weight = fun_btw_15_100GeV->Eval(mpt);
+      weight = fun_btw->Eval(mpt);
     } 
 
     h_B2Lc_FONLL->Fill(pt, weight);
