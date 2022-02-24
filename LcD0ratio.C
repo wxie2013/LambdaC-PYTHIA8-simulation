@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     pythia.readString("ColourReconnection:junctionCorrection=1.43");
     pythia.readString("ColourReconnection:timeDilationMode=0");
 
-  } else if (tune =="CR0") {
+  } else if (tune =="CR2") {
 
     cout<<" -- Color reconnection tune (CR) mode2 ---"<<endl;
     pythia.readString("Tune:ee 7");
