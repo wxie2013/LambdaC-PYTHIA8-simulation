@@ -1,7 +1,4 @@
-./LcD0ratio o1.root 1000000 1 true > out1&
-sleep 1
-./LcD0ratio o2.root 1000000 2 true > out2&
-sleep 1
-./LcD0ratio o3.root 1000000 3 true > out3&
-sleep 1
-./LcD0ratio o4.root 1000000 4 true > out4&
+./LcD0ratio o1.root 10000 1 true SoftQCD_Nondiff_ON CR2 >& out1&
+./LcD0ratio o2.root 10000 2 true HardQCD_ON CUETP8M1 >& out2&
+./LcD0ratio o3.root 10000 3 true HardQCD_ON Monash >& out3&
+./LcD0ratio o4.root 10000 4 true SoftQCD_Nondiff_ON CR0 >& out4&

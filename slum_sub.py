@@ -1,6 +1,6 @@
 import os, time 
 
-def build_job_files(base_dir, job_name, nevt, seed): 
+def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune): 
 
     subfile = base_dir+'/job_file/'+job_name+'.sub'
     if os.path.isdir(base_dir) == False:
@@ -23,7 +23,7 @@ def build_job_files(base_dir, job_name, nevt, seed):
     fsub.write('cd /home/wxie/CMSSW_11_2_0_pre9' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
     fsub.write('export PYTHIA8DATA=/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
-    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " true"+"\n")
+    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " true"+ " "+phys_proc+" "+tune+"\n")
     fsub.close()
 
     return subfile
@@ -47,4 +47,6 @@ if __name__ == "__main__":
     nevt = 500000
     base_dir ='/scratch/halstead/w/wxie/B2Lc'
     #base_dir ='/scratch/brown/wxie/B2Lc'
-    submit_jobs(base_dir, njobs, nevt)
+    phys_proc = "SoftQCD_Nondiff_ON"
+    tune = "CR2"
+    submit_jobs(base_dir, njobs, nevt, phys_proc, tune)
