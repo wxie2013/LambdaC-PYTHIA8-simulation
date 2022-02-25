@@ -1,6 +1,6 @@
 import os, time 
 
-def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune): 
+def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune, useEvtGen): 
 
     subfile = base_dir+'/job_file/'+job_name+'.sub'
     if os.path.isdir(base_dir) == False:
@@ -23,18 +23,18 @@ def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune):
     fsub.write('cd /home/wxie/CMSSW_11_2_0_pre9' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
     fsub.write('export PYTHIA8DATA=/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
-    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " true"+ " "+phys_proc+" "+tune+"\n")
+    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " "+useEvtGen+" "+phys_proc+" "+tune+"\n")
     fsub.close()
 
     return subfile
 
 # submit jobs
-def submit_jobs(base_dir, njobs, nevt): 
+def submit_jobs(base_dir, njobs, nevt, phys_proc, tune, useEvtGen): 
 
     seed = 1
     for i in range(njobs):
         job_name = 'job'+str(i)
-        subfile = build_job_files(base_dir, job_name, nevt, seed)
+        subfile = build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune, useEvtGen)
 
         os.system("sbatch  --time=4:00:00 --nodes=1 -A standby "+subfile)
         #os.system("sbatch  --time=100:00:00  -A physics "+subfile)
@@ -43,10 +43,12 @@ def submit_jobs(base_dir, njobs, nevt):
 
 # running the script:  python3 slum_sub.py
 if __name__ == "__main__":
-    njobs = 2000
-    nevt = 500000
-    base_dir ='/scratch/halstead/w/wxie/B2Lc'
+    njobs = 1000
+    nevt = 1000000
+    base_dir ='/scratch/bell/wxie/B2Lc'
+    #base_dir ='/scratch/halstead/w/wxie/B2Lc'
     #base_dir ='/scratch/brown/wxie/B2Lc'
     phys_proc = "SoftQCD_Nondiff_ON"
     tune = "CR2"
-    submit_jobs(base_dir, njobs, nevt, phys_proc, tune)
+    useEvtGen = "false"
+    submit_jobs(base_dir, njobs, nevt, phys_proc, tune, useEvtGen)
