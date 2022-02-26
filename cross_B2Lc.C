@@ -30,8 +30,12 @@ void cross_B2Lc()
     hB2Lc->Sumw2();
     hB->Sumw2();
 
+<<<<<<< HEAD
     //B->Project("hB", "pt", "abs(y)<2"); // |y(B)|<2 for all |y(Lc)|<1
     B->Project("hB", "pt"); 
+=======
+    B->Project("hB", "pt");
+>>>>>>> 5c3c12354f7e114cefc2320faaadf53a9188a6a7
     B2Lc->Project("hB2Lc", "pt", "abs(y)<1");
     Lc->Project("hLc", "pt", "abs(y)<1");
 

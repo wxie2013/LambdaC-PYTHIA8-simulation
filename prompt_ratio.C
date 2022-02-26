@@ -2,10 +2,15 @@
 
 void prompt_ratio()
 {
-  TFile result("root_file/result_prompt_ratio.root", "RECREATE");
-  TFile f0("/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B_EvtGen/tot_1B_CR2_soft_non_diff_on_EvtGen.root");
-  TFile f1("root_file/inc_bhadron_weight_EvtGen.root");
-  TFile f2("root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root");
+  TFile result("root_file/result_prompt_ratio_weight_from_CUETP8M1_HardQCD_ON_5B_EvtGen.root", "RECREATE");
+  //TFile result("root_file/result_prompt_ratio_CR2_soft_nonDiffractive_ON_1B_EvtGen.root", "RECREATE");
+  TFile f1("root_file/inc_bhadron_weight_CUETP8M1_HardQCD_ON_5B_EvtGen.root");  // weight from CUETP8M1_HardQCD_ON
+  //TFile f1("root_file/inc_bhadron_weight_CR2_soft_nonDiffractive_ON_1B_EvtGen.root"); // weight from CR2 softQCD_nondiff
+
+  // note: for any tune, use CR2 for Lc because it describes the data
+  TFile f0("/depot/cms/users/wxie/B2Lc/CR2_soft_nonDiffractive_ON_1B_EvtGen/tot.root"); 
+  TFile f2("root_file/cross_CR2_soft_nonDiffractive_ON_1B_EvtGen.root");
+  //
   TFile f3("root_file/prompt_pt2_pt4_pt10_combine_fifthturn.root"); // accp*eff prompt Lc
   TFile f4("root_file/nonprompt_pt2_pt4_pt10_combine.root"); // accp*eff non-prompt Lc
 
