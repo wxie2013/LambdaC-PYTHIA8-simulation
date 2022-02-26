@@ -6,8 +6,10 @@ void cross_B2Lc()
     //---------------------------------------------------------------------------------------
     // Note: when switch files, need to update the N_pp and sig_pp in common.h correspondingly 
     //---------------------------------------------------------------------------------------
-    string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B_EvtGen/tot_1B_CR2_soft_non_diff_on_EvtGen.root";
-    string outfile = "root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root";
+    string infile = "/depot/cms/users/wxie/B2Lc/CR2_soft_nonDiffractive_ON_1B_PY/tot.root";
+    string outfile = "root_file/cross_CR2_soft_nonDiffractive_ON_1B_PY.root";
+    //string infile = "/depot/cms/users/wxie/B2Lc/CUETP8M1_soft_nonDiffractive_ON_1B_EvtGen/tot.root";
+    //string outfile = "root_file/cross_CUETP8M1_soft_nonDiffractive_ON_1B_EvtGen.root";
     //string infile = "/depot/cms/users/wxie/B2Lc/CR2_Soft_nonDiffractive_ON_1B/tot_1B_CR2_soft_non_diff_on.root";
     //string outfile = "root_file/cross_B2Lc_CR2_soft_non_diff_on.root";
     //string infile = "/depot/cms/users/wxie/B2Lc/CUETP8M1_HardQCD_ON_10B/tot_10B_CUETP8M1_HardQCD_ON.root";
@@ -28,7 +30,8 @@ void cross_B2Lc()
     hB2Lc->Sumw2();
     hB->Sumw2();
 
-    B->Project("hB", "pt", "abs(y)<2"); // |y(B)|<2 for all |y(Lc)|<1
+    //B->Project("hB", "pt", "abs(y)<2"); // |y(B)|<2 for all |y(Lc)|<1
+    B->Project("hB", "pt"); 
     B2Lc->Project("hB2Lc", "pt", "abs(y)<1");
     Lc->Project("hLc", "pt", "abs(y)<1");
 
