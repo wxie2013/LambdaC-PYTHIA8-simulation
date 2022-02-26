@@ -1,43 +1,21 @@
 #include "common.h"
-// read FONLL txt file 
-TGraph read_FONLL_inc_Bhadron_Y_pm2()
-{
-  ifstream fin;
-  fin.open ("FONLL_inc_Bhadron_Y_pm2.txt");
-  float x, y;
 
-  vector<float>vx, vy;
-  while(true) {
-    fin>>x>>y;
-
-    if(fin.eof())
-      break;
-
-    vx.push_back(x);
-    vy.push_back(y);
-  }
-
-  TGraph gra(vx.size(), vx.data(), vy.data());
-
-  return gra;
-}
 //
 void create_weight()
 {
-  //TFile f0("root_file/FONLL_Bhadron_y7.root");
-  string infile = "root_file/cross_B2Lc_CR2_soft_non_diff_on_EvtGen.root";
-  string outfile = "root_file/inc_bhadron_weight_EvtGen.root";
-  //string infile = "root_file/cross_B2Lc_CR2_soft_non_diff_on.root";
-  //string outfile = "root_file/inc_bhadron_weight.root";
+  TFile f0("root_file/FONLL_Bhadron_y7.root");
+  //string infile = "root_file/cross_CUETP8M1_HardQCD_ON_5B_EvtGen.root";
+  //string outfile = "root_file/inc_bhadron_weight_CUETP8M1_HardQCD_ON_5B_EvtGen.root";
+  //string infile = "root_file/cross_CR2_soft_nonDiffractive_ON_1B_EvtGen.root";
+  //string outfile = "root_file/inc_bhadron_weight_CR2_soft_nonDiffractive_ON_1B_EvtGen.root";
+  string infile = "root_file/cross_CUETP8M1_soft_nonDiffractive_ON_1B_EvtGen.root";
+  string outfile = "root_file/inc_bhadron_weight_CUETP8M1_soft_nonDiffractive_ON_1B_EvtGen.root";
 
   TFile f1(infile.c_str());
   TFile* result = new TFile(outfile.c_str(), "recreate");
 
   TH1D* hB = (TH1D*)f1.Get("hB")->Clone();
-  //TGraph* FONLL_Bhadrons_crosssection = (TGraph*)f0.Get("FONLL_Bhadrons_crosssection")->Clone(); // |y|<7
-  TGraph gra = read_FONLL_inc_Bhadron_Y_pm2();
-  TGraph* FONLL_Bhadrons_crosssection = &gra; //|y|<2
-  FONLL_Bhadrons_crosssection->SetName("FONLL_Bhadrons_crosssection");
+  TGraph* FONLL_Bhadrons_crosssection = (TGraph*)f0.Get("FONLL_Bhadrons_crosssection")->Clone(); // |y|<7
 
   TH1D* hweight = (TH1D*)hB->Clone("hweight");
 
