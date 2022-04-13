@@ -165,6 +165,8 @@ int main(int argc, char* argv[]) {
   // Book histogram.
   TNtuple* Lc = new TNtuple("Lc", "inclusive Lc", "m:pt:y:nch");
   TNtuple* B2Lc = new TNtuple("B2Lc", "B->Lc", "m:pt:y:nch:mpt:my:mid");
+  TNtuple* D0 = new TNtuple("D0", "inclusive D0", "m:pt:y:nch");
+  TNtuple* B2D0 = new TNtuple("B2D0", "B->D0", "m:pt:y:nch:mpt:my:mid");
   TNtuple* B = new TNtuple("B", "all B hadrons", "m:pt:y:id:nch");
 
   // Begin event loop. Generate event; skip if generation aborted.
@@ -197,13 +199,26 @@ int main(int argc, char* argv[]) {
 
           B2Lc->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mpid);
         }
-      } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5))
-      {// don't include di-quarks 
+      } else if((abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5)) { // inc B-hadron
         int dau_index1 =pythia.event[i].daughter1(); 
         int dau_index2 = pythia.event[i].daughter2();
         if(debug) cout<<"0___ pid: "<<pid<<endl;
         if(daughter_is_not_Bhadron(pythia, dau_index1, dau_index2))  
           B->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), pid, nCh);
+      } else if (abs(pid) == 421) {//.. D0
+
+        // inclusive D0
+        D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
+
+        // B->D0
+        int midx = pythia.event[i].mother1();  // mother index
+        int mpid = pythia.event[midx].id();  // mother pid
+        if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) {
+          float mpt = pythia.event[midx].pT();  // mother pT
+          float my = pythia.event[midx].y();  // mother y
+
+          B2D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, mpt, my, mpid);
+        }
       }
     }
   }
@@ -215,6 +230,8 @@ int main(int argc, char* argv[]) {
 
   Lc->Write();
   B2Lc->Write();
+  D0->Write();
+  B2D0->Write();
   B->Write();
   delete outFile;
 
