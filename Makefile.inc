@@ -2,8 +2,7 @@
 # Generated on Mon Jan 7 10:59:49 STD 2019 with the user supplied options:
 
 # Install directory prefixes.
-#PY_HOME=/home/py8_evtgen_HepMC/
-PY_HOME=/home/wxie/py8_evtgen_HepMC/
+PY_HOME=/home/wxie/local_pkgs/py8_evtgen_HepMC/
 PREFIX_BIN=$(PY_HOME)/bin
 PREFIX_INCLUDE=$(PY_HOME)/include
 PREFIX_LIB=$(PY_HOME)/lib
@@ -22,7 +21,7 @@ EVTGEN_USE=true
 EVTGEN_CONFIG=
 EVTGEN_BIN=$(PY_HOME)/bin
 EVTGEN_INCLUDE=-I$(PY_HOME)/include/EvtGen
-EVTGEN_LIB= -L$(PY_HOME)/lib -lEvtGenExternal -lEvtGen
+EVTGEN_LIB= -L$(PY_HOME)/lib -lEvtGenExternal -lEvtGen 
 
 # ROOT configuration.
 ROOT_USE=true

@@ -1,3 +1,5 @@
+cd ~/CMSSW_12_6_5/src/; cmsenv; cd -
+export PYTHIA8DATA=/home/wxie/local_pkgs/py8_evtgen_HepMC/share/Pythia8/xmldoc
 ./LcD0ratio o1.root 10000 1 true SoftQCD_Nondiff_ON CR2 >& out1&
 ./LcD0ratio o2.root 10000 2 true HardQCD_ON CUETP8M1 >& out2&
 ./LcD0ratio o3.root 10000 3 true HardQCD_ON Monash >& out3&
