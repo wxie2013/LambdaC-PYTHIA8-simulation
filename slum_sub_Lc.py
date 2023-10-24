@@ -21,7 +21,7 @@ def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune, useEvtGen):
     fsub.write('#SBATCH --error='+base_dir+'/err/'+job_name+'.err'+'\n')
     fsub.write('#SBATCH --job-name="'+job_name+'"\n') 
     fsub.write('conda deactivate' +'\n')
-    fsub.write('cd /home/wxie/CMSSW_CMSSW_12_6_5' +'\n')
+    fsub.write('cd /home/wxie/CMSSW_12_6_5' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
     fsub.write('export PYTHIA8DATA=/home/wxie/local_pkgs/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
     fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " "+useEvtGen+" "+phys_proc+" "+tune+"\n")
