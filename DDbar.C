@@ -14,15 +14,11 @@
 // ROOT, for saving file.
 #include "TFile.h"
 
-bool debug = false;
-
 using namespace Pythia8;
 //
-bool is_nonprompt(Pythia &pythia, Particle &ptl);
-bool is_decay_from_charm_hadron(Pythia &pythia, Particle &ptl);
+pair<bool, bool> is_C_B_hadron_decay(vector<pair<int,int>> ancestor_list, Pythia &pythia);
 void ancestor_list(
         vector<pair<int,int>> &ancestor_status_index, 
-        vector<int> &D0_indices, 
         Pythia &pythia, 
         int idx_D0
         );
@@ -174,7 +170,7 @@ int main(int argc, char* argv[]) {
     TFile* outFile = new TFile(filename, "RECREATE");
 
     // Book histogram.
-    TNtuple* ddbar = new TNtuple("ddbar", "", "pid1:pid2:pt1:pt2:y1:y2:phi1:phi2:bhadr_decay1:bhadr_decay2:chadr_decay1:chadr_decay2:nD0");
+    TNtuple* ddbar = new TNtuple("ddbar", "", "pid1:pid2:pt1:pt2:y1:y2:phi1:phi2:chadr_decay1:chadr_decay2:bhadr_decay1:bhadr_decay2:nD0:ievt");
 
     // Begin event loop. Generate event; skip if generation aborted.
     for (int iEvent = 0; iEvent < nevt; ++iEvent) {
@@ -190,14 +186,13 @@ int main(int argc, char* argv[]) {
                 ++nCh;
         }
 
-        int nD0 = 0;
         vector<int> D0_indices;
         vector<vector<pair<int,int>>> ancestor_info; // all D0/D0bar ancestors status and index
         for (int i = 0; i < pythia.event.size(); ++i) {
             int pid = pythia.event[i].id();
             if (abs(pid) == 421) {//.. D0
                 vector<pair<int, int>> ancestor_status_index;
-                ancestor_list(ancestor_status_index, D0_indices, pythia, i);
+                ancestor_list(ancestor_status_index, pythia, i);
                 if(debug) {
                     cout<<" pid: "<<pid<<endl;
                     for(int m=0; m<ancestor_status_index.size(); m++) {
@@ -206,28 +201,27 @@ int main(int argc, char* argv[]) {
                     cout<<endl;
                 }
                 ancestor_info.push_back(ancestor_status_index);
-
-                nD0++;
+                D0_indices.push_back(i);
             }
         }
         //
-        if(nD0==0) 
+        if(D0_indices.size()==0) 
             continue;
 
         if(debug) {
-            if(nD0>=2) {
-                cout<<" nD0: "<<nD0<<endl;
+            if(D0_indices.size()>=2) {
+                cout<<" nD0: "<<D0_indices.size()<<endl;
                 pythia.event.list(false, false);
             }
         }
+        
+        // categorize all D0-D0bar pairs
+        auto category_list =  production_category(ancestor_info, D0_indices, pythia);
 
-        //cout<<" nD0: "<<nD0<<endl;
-        vector<bool> bhadr_decay;
-        vector<bool> chadr_decay;
+        vector<pair<bool, bool>> is_cb_hadr_decay;
         for(int i = 0; i<D0_indices.size(); i++) {
             int m = D0_indices[i];
-            bhadr_decay.push_back(is_nonprompt(pythia, pythia.event[m]));
-            chadr_decay.push_back(is_decay_from_charm_hadron(pythia, pythia.event[m]));
+            is_cb_hadr_decay.push_back(is_C_B_hadron_decay(ancestor_info[i], pythia));
         }
         for(int i = 0; i<D0_indices.size()-1; i++) {
             int m = D0_indices[i];
@@ -243,11 +237,12 @@ int main(int argc, char* argv[]) {
                         pythia.event[n].y(), 
                         pythia.event[m].phi(), 
                         pythia.event[n].phi(), 
-                        bhadr_decay[i], 
-                        bhadr_decay[j], 
-                        chadr_decay[i], 
-                        chadr_decay[j], 
-                        nD0
+                        is_cb_hadr_decay[i].first, 
+                        is_cb_hadr_decay[j].first, 
+                        is_cb_hadr_decay[i].second, 
+                        is_cb_hadr_decay[j].second, 
+                        D0_indices.size(), 
+                        iEvent
                         );
             }
         }
@@ -266,41 +261,26 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// check if a ancestor is B hadron
-bool is_nonprompt(Pythia &pythia, Particle &ptl)
+// check if a ancestor is B or charm hadron
+pair<bool, bool> is_C_B_hadron_decay(vector<pair<int,int>> ancestor_list, Pythia &pythia)
 {
-    auto mother_list = ptl.motherList();
-    for (int i = 0; i<mother_list.size(); i++) {
-        int midx = mother_list[i];
-        int mpid = pythia.event[midx].id();
-        int m1idx = pythia.event[midx].mother1();
-        int m2idx = pythia.event[midx].mother2();
-        //cout<<"pid: "<<ptl.id()<<" midx: "<<midx<<" mpid: "<<mpid<<" grandmother1: "<<pythia.event[m1idx].id()<<" grandmother2: "<<pythia.event[m2idx].id()<<endl;
-        if(abs(int(mpid/100)%10)==5 || abs(int(mpid/1000)%10)==5) 
-            return true;
-        else
-            return is_nonprompt(pythia, pythia.event[midx]);
+    bool is_Bhadron_decay = false;
+    bool is_Chadron_decay = false;
+    for (int i = 0; i<ancestor_list.size(); i++) {
+        int idx = ancestor_list[i].first;
+        int pid = pythia.event[idx].id();
+        if(abs(int(pid/100)%10)==5 || abs(int(pid/1000)%10)==5) 
+            is_Bhadron_decay = true;
+
+        if(abs(int(pid/100)%10)==4 || abs(int(pid/1000)%10)==4) 
+            is_Chadron_decay = true;
     }
-    return false;
+    return std::make_pair(is_Chadron_decay, is_Bhadron_decay);
 }
-// check if a ancestor is B hadron
-bool is_decay_from_charm_hadron(Pythia &pythia, Particle &ptl)
-{
-    auto mother_list = ptl.motherList();
-    for (int i = 0; i<mother_list.size(); i++) {
-        int midx = mother_list[i];
-        int mpid = pythia.event[midx].id();
-        if(abs(int(mpid/100)%10)==4 || abs(int(mpid/1000)%10)==4) 
-            return true;
-        else
-            return is_decay_from_charm_hadron(pythia, pythia.event[midx]);
-    }
-    return false;
-}
+
 // check if a ancestor is B hadron
 void ancestor_list(
         vector<pair<int,int>> &ancestor_status_index, 
-        vector<int> &D0_indices, 
         Pythia &pythia, 
         int idx_D0
         )
@@ -309,10 +289,10 @@ void ancestor_list(
         int midx = pythia.event[idx_D0].motherList()[i];
         int status = pythia.event[midx].status();
         ancestor_status_index.push_back(std::make_pair(midx, status));
-        D0_indices.push_back(idx_D0);
-        ancestor_list(ancestor_status_index, D0_indices, pythia, midx);
+        ancestor_list(ancestor_status_index, pythia, midx);
     }
 }
+
 // which of the production classes it belong to
 vector<tuple<string, int, int>> production_category(
         vector<vector<pair<int,int>>> & ancestor_info, 
