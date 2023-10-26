@@ -17,15 +17,30 @@
 bool debug = false;
 
 using namespace Pythia8;
-
+//
 bool is_nonprompt(Pythia &pythia, Particle &ptl);
 bool is_decay_from_charm_hadron(Pythia &pythia, Particle &ptl);
-void ancestor_list(vector<int> & index_list, Pythia &pythia, Particle &ptl);
-
+void ancestor_list(
+        vector<pair<int,int>> &ancestor_status_index, 
+        vector<int> &D0_indices, 
+        Pythia &pythia, 
+        int idx_D0
+        );
+string classifier(
+        vector<pair<int,int>> & ancestor1, 
+        vector<pair<int,int>> & ancestor2, 
+        Pythia &pythia
+        );
+vector<tuple<string, int, int>> production_category(
+        vector<vector<pair<int,int>>> & ancestor_info, 
+        vector<int> D0_indices,
+        Pythia &pythia
+        );
+//
 int main(int argc, char* argv[]) {
 
     // Check arguments.
-    if (argc != 7) {
+    if (argc != 8) {
         cerr << " Unexpected number of command-line arguments. \n You are"
             << " expected to provide the arguments \n"
             << " 1. output file name \n"
@@ -34,6 +49,7 @@ int main(int argc, char* argv[]) {
             << " 4. Flag to use EvtGen (true or false) \n"
             << " 5. phys_process (HardQCD_ON, SoftQCD_Nondiff_ON)\n"
             << " 6. tune (Monash, CUETP8M1, CR0, CR2)\n"
+            << " 7. debug\n"
             << " Program stopped. " << endl;
         return 1;
     }
@@ -43,6 +59,7 @@ int main(int argc, char* argv[]) {
     bool useEvtGen(string(argv[4]) == "true");
     string phys_process = argv[5];
     string tune = argv[6];
+    bool debug = argv[7];
 
     cout<<"outfile: "<<filename<<" nevt: "<<nevt<<" seed: "<<seed<<" useEvtGen:"<<useEvtGen<<endl;
 
@@ -174,11 +191,22 @@ int main(int argc, char* argv[]) {
         }
 
         int nD0 = 0;
-        vector<int> index;
+        vector<int> D0_indices;
+        vector<vector<pair<int,int>>> ancestor_info; // all D0/D0bar ancestors status and index
         for (int i = 0; i < pythia.event.size(); ++i) {
             int pid = pythia.event[i].id();
             if (abs(pid) == 421) {//.. D0
-                index.push_back(i);
+                vector<pair<int, int>> ancestor_status_index;
+                ancestor_list(ancestor_status_index, D0_indices, pythia, i);
+                if(debug) {
+                    cout<<" pid: "<<pid<<endl;
+                    for(int m=0; m<ancestor_status_index.size(); m++) {
+                        cout<<"("<<ancestor_status_index[m].first<<"|"<<ancestor_status_index[m].second<<") ";
+                    }
+                    cout<<endl;
+                }
+                ancestor_info.push_back(ancestor_status_index);
+
                 nD0++;
             }
         }
@@ -186,18 +214,25 @@ int main(int argc, char* argv[]) {
         if(nD0==0) 
             continue;
 
+        if(debug) {
+            if(nD0>=2) {
+                cout<<" nD0: "<<nD0<<endl;
+                pythia.event.list(false, false);
+            }
+        }
+
         //cout<<" nD0: "<<nD0<<endl;
         vector<bool> bhadr_decay;
         vector<bool> chadr_decay;
-        for(int i = 0; i<index.size(); i++) {
-            int m = index[i];
+        for(int i = 0; i<D0_indices.size(); i++) {
+            int m = D0_indices[i];
             bhadr_decay.push_back(is_nonprompt(pythia, pythia.event[m]));
             chadr_decay.push_back(is_decay_from_charm_hadron(pythia, pythia.event[m]));
         }
-        for(int i = 0; i<index.size()-1; i++) {
-            int m = index[i];
-            for(int j = i+1; j<index.size(); j++) {
-                int n = index[j];
+        for(int i = 0; i<D0_indices.size()-1; i++) {
+            int m = D0_indices[i];
+            for(int j = i+1; j<D0_indices.size(); j++) {
+                int n = D0_indices[j];
 
                 ddbar->Fill(
                         pythia.event[m].id(), 
@@ -263,12 +298,110 @@ bool is_decay_from_charm_hadron(Pythia &pythia, Particle &ptl)
     return false;
 }
 // check if a ancestor is B hadron
-void ancestor_list(vector<int> & index_list, Pythia &pythia, Particle &ptl)
+void ancestor_list(
+        vector<pair<int,int>> &ancestor_status_index, 
+        vector<int> &D0_indices, 
+        Pythia &pythia, 
+        int idx_D0
+        )
 {
-    for (int i = 0; i<ptl.motherList().size(); i++) {
-        int midx = ptl.motherList()[i];
-        int mpid = pythia.event[midx].id();
-        index_list.push_back(midx);
-        ancestor_list(index_list, pythia, pythia.event[midx]);
+    for (int i = 0; i<pythia.event[idx_D0].motherList().size(); i++) {
+        int midx = pythia.event[idx_D0].motherList()[i];
+        int status = pythia.event[midx].status();
+        ancestor_status_index.push_back(std::make_pair(midx, status));
+        D0_indices.push_back(idx_D0);
+        ancestor_list(ancestor_status_index, D0_indices, pythia, midx);
+    }
+}
+// which of the production classes it belong to
+vector<tuple<string, int, int>> production_category(
+        vector<vector<pair<int,int>>> & ancestor_info, 
+        vector<int> D0_indices,
+        Pythia &pythia
+        )
+{
+    // tuple<string, int, int>: 
+    //      string: "FCR", "FEX", "GSP" 
+    //      int, int: the index of the heavy quarks produced together
+    //Note: index of D0_indices and ancestor_info syncronize
+
+    vector<tuple<string, int, int>> result;
+    for(int i = 0; i<ancestor_info.size()-1; i++) {
+        for(int j = i+1; i<ancestor_info.size(); i++) {
+            string category =  classifier(ancestor_info[i], ancestor_info[j], pythia);
+            result.push_back(std::make_tuple(category, D0_indices[i], D0_indices[j]));
+        }
+    }
+
+    return result;
+}
+
+// classify a pair of D0 are from FCR, FEX, GSP or different hard collision
+string classifier(
+        vector<pair<int,int>> & ancestor1, 
+        vector<pair<int,int>> & ancestor2, 
+        Pythia &pythia
+        )
+{
+    // check if they have a common ancestor gluon
+    bool same_ancestor = false;
+    for(int i = 0; i<ancestor1.size(); i++) {
+        int idx1 = ancestor1[i].first;
+        auto it = std::find_if(ancestor2.begin(), ancestor2.end(), 
+                [&idx1](const pair<int, int>& element)
+                { return element.first == idx1;} );
+
+        if(it==ancestor2.end())
+            continue;
+
+        if(abs(pythia.event[idx1].id()) == 21 || abs(pythia.event[idx1].id()) == 9) {
+            same_ancestor = true;
+            break;
+        }
+    }
+
+    if(same_ancestor == false)
+        return "unCorrelated";
+
+    // now check status of 1st charm quark 
+    bool charm1_from_hard_scattering = false;
+    bool charm1_from_initial_state = false;
+    for(int i = 0; i<ancestor1.size(); i++) {
+        int idx1 = ancestor1[i].first;
+
+        if(abs(pythia.event[idx1].id()) == 4) {
+            int status = ancestor1[i].second;
+            if(abs(status) >= 21 && abs(status) <=29) 
+               charm1_from_hard_scattering = true; 
+
+            if(abs(status) >= 41 && abs(status) <=49) 
+                charm1_from_initial_state = true;
+        }
+    }
+    // now check status of 2nd charm quark 
+    bool charm2_from_hard_scattering = false;
+    bool charm2_from_initial_state = false;
+    for(int i = 0; i<ancestor1.size(); i++) {
+        int idx1 = ancestor1[i].first;
+
+        if(abs(pythia.event[idx1].id()) == 4) {
+            int status = ancestor1[i].second;
+            if(abs(status) >= 21 && abs(status) <=29) 
+               charm2_from_hard_scattering = true; 
+
+            if(abs(status) >= 41 && abs(status) <=49) 
+                charm2_from_initial_state = true;
+        }
+    }
+
+    if(charm1_from_hard_scattering && charm2_from_hard_scattering) {
+        return "FCR";
+    } else if(charm1_from_hard_scattering && !charm2_from_hard_scattering ||
+            !charm1_from_hard_scattering && charm2_from_hard_scattering) {
+        if(!charm1_from_initial_state && !charm2_from_initial_state)
+            cout<<" !!!!  none from initial state for FEX category !!!"<<endl;
+        return "FEX";
+    } else if(!charm1_from_hard_scattering && !charm2_from_hard_scattering) {
+        return "GSP";
     }
 }
