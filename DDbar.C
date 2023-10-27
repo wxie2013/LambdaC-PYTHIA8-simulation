@@ -17,17 +17,17 @@
 using namespace Pythia8;
 //
 pair<bool, bool> is_C_B_hadron_decay(vector<pair<int,int>> ancestor_list, Pythia &pythia);
-void ancestor_list(
+void create_ancestor_list(
         vector<pair<int,int>> &ancestor_status_index, 
         Pythia &pythia, 
         int idx_D0
         );
-string classifier(
+int classifier(
         vector<pair<int,int>> & ancestor1, 
         vector<pair<int,int>> & ancestor2, 
         Pythia &pythia
         );
-vector<tuple<string, int, int>> production_category(
+vector<tuple<int, int, int>> production_category(
         vector<vector<pair<int,int>>> & ancestor_info, 
         vector<int> D0_indices,
         Pythia &pythia
@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
     TFile* outFile = new TFile(filename, "RECREATE");
 
     // Book histogram.
-    TNtuple* ddbar = new TNtuple("ddbar", "", "pid1:pid2:pt1:pt2:y1:y2:phi1:phi2:chadr_decay1:chadr_decay2:bhadr_decay1:bhadr_decay2:nD0:ievt");
+    TNtuple* ddbar = new TNtuple("ddbar", "", "pid1:pid2:pt1:pt2:y1:y2:phi1:phi2:chadr_decay1:chadr_decay2:bhadr_decay1:bhadr_decay2:category:nD0:ievt");
 
     // Begin event loop. Generate event; skip if generation aborted.
     for (int iEvent = 0; iEvent < nevt; ++iEvent) {
@@ -192,7 +192,10 @@ int main(int argc, char* argv[]) {
             int pid = pythia.event[i].id();
             if (abs(pid) == 421) {//.. D0
                 vector<pair<int, int>> ancestor_status_index;
-                ancestor_list(ancestor_status_index, pythia, i);
+                create_ancestor_list(ancestor_status_index, pythia, i);
+                ancestor_info.push_back(ancestor_status_index);
+                D0_indices.push_back(i);
+
                 if(debug) {
                     cout<<" pid: "<<pid<<endl;
                     for(int m=0; m<ancestor_status_index.size(); m++) {
@@ -200,8 +203,6 @@ int main(int argc, char* argv[]) {
                     }
                     cout<<endl;
                 }
-                ancestor_info.push_back(ancestor_status_index);
-                D0_indices.push_back(i);
             }
         }
         //
@@ -223,11 +224,25 @@ int main(int argc, char* argv[]) {
             int m = D0_indices[i];
             is_cb_hadr_decay.push_back(is_C_B_hadron_decay(ancestor_info[i], pythia));
         }
+
         for(int i = 0; i<D0_indices.size()-1; i++) {
             int m = D0_indices[i];
             for(int j = i+1; j<D0_indices.size(); j++) {
                 int n = D0_indices[j];
 
+                auto it = std::find_if(category_list.begin(), category_list.end(), 
+                        [&m, &n](const tuple<int, int, int>& element)
+                        { return std::get<1>(element)==m && std::get<2>(element)==n;});
+
+                int category = -1;
+                if(it != category_list.end()) {
+                    category = std::get<0>(*it);
+                } else {
+                    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                    cout<<" !!!!!  No ancestor for: D0 index1="<<m<<" D0 index2 ="<<n<<". Stop the run !!!!! "<<endl;
+                    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                    exit(0);
+                }
                 ddbar->Fill(
                         pythia.event[m].id(), 
                         pythia.event[n].id(), 
@@ -241,6 +256,7 @@ int main(int argc, char* argv[]) {
                         is_cb_hadr_decay[j].first, 
                         is_cb_hadr_decay[i].second, 
                         is_cb_hadr_decay[j].second, 
+                        category, 
                         D0_indices.size(), 
                         iEvent
                         );
@@ -279,7 +295,7 @@ pair<bool, bool> is_C_B_hadron_decay(vector<pair<int,int>> ancestor_list, Pythia
 }
 
 // check if a ancestor is B hadron
-void ancestor_list(
+void create_ancestor_list(
         vector<pair<int,int>> &ancestor_status_index, 
         Pythia &pythia, 
         int idx_D0
@@ -289,26 +305,26 @@ void ancestor_list(
         int midx = pythia.event[idx_D0].motherList()[i];
         int status = pythia.event[midx].status();
         ancestor_status_index.push_back(std::make_pair(midx, status));
-        ancestor_list(ancestor_status_index, pythia, midx);
+        create_ancestor_list(ancestor_status_index, pythia, midx);
     }
 }
 
 // which of the production classes it belong to
-vector<tuple<string, int, int>> production_category(
+vector<tuple<int, int, int>> production_category(
         vector<vector<pair<int,int>>> & ancestor_info, 
         vector<int> D0_indices,
         Pythia &pythia
         )
 {
     // tuple<string, int, int>: 
-    //      string: "FCR", "FEX", "GSP" 
-    //      int, int: the index of the heavy quarks produced together
+    //      1st int: "FCR", "FEX", "GSP" 
+    //      2nd/3rd int, int: the index of the heavy quarks produced together
     //Note: index of D0_indices and ancestor_info syncronize
 
-    vector<tuple<string, int, int>> result;
+    vector<tuple<int, int, int>> result;
     for(int i = 0; i<ancestor_info.size()-1; i++) {
-        for(int j = i+1; i<ancestor_info.size(); i++) {
-            string category =  classifier(ancestor_info[i], ancestor_info[j], pythia);
+        for(int j = i+1; j<ancestor_info.size(); j++) {
+            int category =  classifier(ancestor_info[i], ancestor_info[j], pythia);
             result.push_back(std::make_tuple(category, D0_indices[i], D0_indices[j]));
         }
     }
@@ -317,12 +333,17 @@ vector<tuple<string, int, int>> production_category(
 }
 
 // classify a pair of D0 are from FCR, FEX, GSP or different hard collision
-string classifier(
+int classifier(
         vector<pair<int,int>> & ancestor1, 
         vector<pair<int,int>> & ancestor2, 
         Pythia &pythia
         )
 {
+    // 0: uncorrelated DDbar
+    // 1: Flavor creation 
+    // 2: Flavor excitation
+    // 3: Gluon splitting 
+
     // check if they have a common ancestor gluon
     bool same_ancestor = false;
     for(int i = 0; i<ancestor1.size(); i++) {
@@ -341,7 +362,7 @@ string classifier(
     }
 
     if(same_ancestor == false)
-        return "unCorrelated";
+        return 0;
 
     // now check status of 1st charm quark 
     bool charm1_from_hard_scattering = false;
@@ -375,13 +396,13 @@ string classifier(
     }
 
     if(charm1_from_hard_scattering && charm2_from_hard_scattering) {
-        return "FCR";
+        return 1;
     } else if(charm1_from_hard_scattering && !charm2_from_hard_scattering ||
             !charm1_from_hard_scattering && charm2_from_hard_scattering) {
         if(!charm1_from_initial_state && !charm2_from_initial_state)
             cout<<" !!!!  none from initial state for FEX category !!!"<<endl;
-        return "FEX";
+        return 2;
     } else if(!charm1_from_hard_scattering && !charm2_from_hard_scattering) {
-        return "GSP";
+        return 3;
     }
 }
