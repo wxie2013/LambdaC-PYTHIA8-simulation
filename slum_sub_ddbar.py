@@ -20,10 +20,10 @@ def build_job_files(base_dir, job_name, nevt, seed, phys_proc, tune, useEvtGen):
     fsub.write('#SBATCH --output='+base_dir+'/log/'+job_name+'.out'+'\n')
     fsub.write('#SBATCH --error='+base_dir+'/err/'+job_name+'.err'+'\n')
     fsub.write('#SBATCH --job-name="'+job_name+'"\n') 
-    fsub.write('cd /home/wxie/CMSSW_11_2_0_pre9' +'\n')
+    fsub.write('cd /home/wxie/CMSSW_12_6_5' +'\n')
     fsub.write('eval `scramv1 runtime -sh`' +'\n')
-    fsub.write('export PYTHIA8DATA=/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
-    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/LcD0ratio '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " "+useEvtGen+" "+phys_proc+" "+tune+"\n")
+    fsub.write('export PYTHIA8DATA=/home/wxie/local_pkgs/py8_evtgen_HepMC/share/Pythia8/xmldoc' +'\n')
+    fsub.write('/home/wxie/LambdaC-PYTHIA8-simulation/DDbar '+base_dir+'/'+job_name+'.root '+str(nevt)+ " " + str(seed)+ " "+useEvtGen+" "+phys_proc+" "+tune+"\n")
     fsub.close()
 
     return subfile
@@ -45,9 +45,7 @@ def submit_jobs(base_dir, njobs, nevt, phys_proc, tune, useEvtGen):
 if __name__ == "__main__":
     njobs = 1000
     nevt = 1000000
-    base_dir ='/scratch/bell/wxie/B2Lc'
-    #base_dir ='/scratch/halstead/w/wxie/B2Lc'
-    #base_dir ='/scratch/brown/wxie/B2Lc'
+    base_dir ='/scratch/bell/wxie/ddbar'
     phys_proc = "SoftQCD_Nondiff_ON"
     tune = "CR2"
     useEvtGen = "false"

@@ -21,7 +21,7 @@ EVTGEN_USE=true
 EVTGEN_CONFIG=
 EVTGEN_BIN=$(PY_HOME)/bin
 EVTGEN_INCLUDE=-I$(PY_HOME)/include/EvtGen
-EVTGEN_LIB= -L$(PY_HOME)/lib -lEvtGenExternal -lEvtGen
+EVTGEN_LIB= -L$(PY_HOME)/lib -lEvtGenExternal -lEvtGen 
 
 # ROOT configuration.
 ROOT_USE=true

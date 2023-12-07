@@ -64,11 +64,17 @@ LcD0ratio: LcD0ratio.C $(PREFIX_LIB)/libpythia8.a
 		-Wl,-rpath,$(ROOT_LIB) `$(ROOT_BIN)/root-config --glibs` \
 		-DEVTGEN_PYTHIA -DEVTGEN_EXTERNAL $(EVTGEN_LIB)
 
+DDbar: DDbar.C $(PREFIX_LIB)/libpythia8.a
+	$(CXX) $< -o $@ -w  -I$(PREFIX_INCLUDE) -I$(ROOT_INCLUDE) $(CXX_COMMON)  $(EVTGEN_INCLUDE) \
+		`$(ROOT_BIN)/root-config --cflags`\
+		-Wl,-rpath,$(ROOT_LIB) `$(ROOT_BIN)/root-config --glibs` \
+		-DEVTGEN_PYTHIA -DEVTGEN_EXTERNAL $(EVTGEN_LIB)
+
 # Internally used tests, without external dependencies.
 test% : test%.cc $(PREFIX_LIB)/libpythia8.a
 	$(CXX) $< -o $@ $(CXX_COMMON) $(GZIP_INC) $(GZIP_FLAGS)
 
 # Clean.
 clean:
-	rm -f LcD0ratio; rm -f *.dat;\
+	rm -f LcD0ratio DDbar; rm -f *.dat;\
 	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.*; rm -f *.so;
