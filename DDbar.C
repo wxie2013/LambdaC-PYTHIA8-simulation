@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
     EvtGenDecays *evtgen = 0;
     if (useEvtGen) {
         //setenv("PYTHIA8DATA", "/home/wxie/py8_evtgen_HepMC/share/Pythia8/xmldoc", 1);
-        evtgen = new EvtGenDecays(&pythia, "/home/wxie/local_pkgs/py8_evtgen_HepMC/share/EvtGen/DECAY.DEC", "/home/wxie/local_pkgs/py8_evtgen_HepMC/share/EvtGen/evt.pdl");
+        evtgen = new EvtGenDecays(&pythia, "/home/wxie/.conda/envs/2022.10-py39/brian2/share/EvtGen/DECAY.DEC", "/home/wxie/.conda/envs/2022.10-py39/brian2/share/EvtGen/evt.pdl");
     }
 
 

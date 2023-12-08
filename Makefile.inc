@@ -2,7 +2,7 @@
 # Generated on Mon Jan 7 10:59:49 STD 2019 with the user supplied options:
 
 # Install directory prefixes.
-PY_HOME=/home/wxie/local_pkgs/py8_evtgen_HepMC/
+PY_HOME=/home/wxie/.conda/envs/2022.10-py39/brian2
 PREFIX_BIN=$(PY_HOME)/bin
 PREFIX_INCLUDE=$(PY_HOME)/include
 PREFIX_LIB=$(PY_HOME)/lib
