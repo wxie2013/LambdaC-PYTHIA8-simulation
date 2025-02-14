@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
   // Initialize EvtGen.
   EvtGenDecays *evtgen = 0;
   if (useEvtGen) {
-    evtgen = new EvtGenDecays(&pythia, "/home/wxie/.conda/envs/2022.10-py39/brian2/share/EvtGen/DECAY.DEC", "/home/wxie/.conda/envs/2022.10-py39/brian2/share/EvtGen/evt.pdl");
+    evtgen = new EvtGenDecays(&pythia, "/home/wxie/local_pkgs/anaconda3/envs/brian2/share/EvtGen/DECAY.DEC", "/home/wxie/local_pkgs/anaconda3/envs/brian2/share/EvtGen/evt.pdl");
   }
 
 
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
   // Book histogram.
   TNtuple* Lc = new TNtuple("Lc", "inclusive Lc", "m:pt:y:nch");
   TNtuple* B2Lc = new TNtuple("B2Lc", "B->Lc", "m:pt:y:nch:mpt:my:mid");
-  TNtuple* D0 = new TNtuple("D0", "inclusive D0", "m:pt:y:nch");
+  TNtuple* D0 = new TNtuple("D0", "inclusive D0", "m:pt:y:nch:pt1:pt2:id1:id2:n_dau");
   TNtuple* B2D0 = new TNtuple("B2D0", "B->D0", "m:pt:y:nch:mpt:my:mid");
   TNtuple* B = new TNtuple("B", "all B hadrons", "m:pt:y:id:nch");
 
@@ -207,7 +207,14 @@ int main(int argc, char* argv[]) {
       } else if (abs(pid) == 421) {//.. D0
 
         // inclusive D0
-        D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh);
+        int dau_index1 =pythia.event[i].daughter1(); 
+        int dau_index2 = pythia.event[i].daughter2();
+        float pt1 = pythia.event[dau_index1].pT();
+        float pt2 = pythia.event[dau_index2].pT();
+        float id1 = pythia.event[dau_index1].id();
+        float id2 = pythia.event[dau_index2].id();
+        float n_dau = pythia.event[i].daughterList().size();
+        D0->Fill(pythia.event[i].m(), pythia.event[i].pT(), pythia.event[i].y(), nCh, pt1, pt2, id1, id2, n_dau);
 
         // B->D0
         int midx = pythia.event[i].mother1();  // mother index
